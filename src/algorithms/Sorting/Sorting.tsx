@@ -4,6 +4,7 @@ import Heap from "./Heap";
 export default class Sorting {
   private setHeight: Dispatch<{ type: string; payload: number[] }>;
   private delay: number;
+  public stop: boolean = false;
 
   constructor(
     setHeight: Dispatch<{ type: string; payload: number[] }>,
@@ -50,90 +51,68 @@ export default class Sorting {
     }
   };
 
+  public heapSort = async (list: number[]): Promise<void> => {
+    let heap: Heap = new Heap();
+    heap.heapify(list);
+    // console.log('After hepification : ' + array);
+    // console.log('The min is ' + heap.min());
+    // console.log('After min heap is : ' + heap.heap);
+    for (let i: number = 0; heap.size !== 0; i++) {
+      list[i] = heap.min();
+      this.setHeight({ type: "UPDATE", payload: list });
+      await this.sleep(this.delay);
+    }
+  };
+
   // Helper method for merge sort
   private getLeftSubArray = (list: number[]): number[] => {
     let returnList: number[] = [];
-    for (let i: number = 0; i < Math.floor(list.length / 2); i++) {
-      returnList.push(list[i]);
-    }
+    for (let i: number = 0; i < Math.floor(list.length / 2); i++) returnList.push(list[i]);
     return returnList;
   };
 
   // Helper method for merge sort
   private getRightSubArray = (list: number[]): number[] => {
     let returnList: number[] = [];
-    for (let i: number = 0; i < Math.floor(returnList.length); i++) {
-      returnList.push(list[list.length / 2 + i]);
-    }
+    for (let i: number = Math.floor(list.length / 2); i < list.length; i++) returnList.push(list[i]);
     return returnList;
   };
 
-  public mergeSort = (list: number[]): void => {
-    if (list.length < 2) return;
+  private renderList = (list: number[], mainList: number[]): void => {
+    // let array: number[] = [...mainList];
+    // for (let i: number = 0; i < list.length; i++) array[i] = list[i];
+    this.setHeight({ type: "UPDATE", payload: [...list, ...mainList.slice(list.length)] });
+  };
+
+  public mergeSort = async (list: number[], mainList: number[]): Promise<number[]> => {
+    if (list.length < 2) return (list);
     let left: number[] = this.getLeftSubArray(list);
     let right: number[] = this.getRightSubArray(list);
-    this.mergeSort(left); // MergeSort on the right sub array
-    this.mergeSort(right); // MergeSort on the left sub array
-    this.merge(left, right, list);
+    let leftList: number[] = await this.mergeSort(left, mainList); // MergeSort on the right sub array
+    let rightList: number[] = await this.mergeSort(right, mainList); // MergeSort on the left sub array
+    let merged: number[] = this.merge(leftList, rightList);
+    this.renderList(merged, mainList);
+    await this.sleep(this.delay);
+    return (merged);
   };
 
   // This is a working merge function with running time of O(n)
-  private merge = (
-    listOne: number[],
-    listTwo: number[],
-    list: number[]
-  ): number[] => {
-    // int[] list = new int[listOne.length + listTwo.length];
-    let listOnePointer: number = 0;
-    let listTwoPointer: number = 0;
-    let listPointer: number = 0;
-    while (
-      listOnePointer < listOne.length &&
-      listTwoPointer < listTwo.length &&
-      listPointer < list.length
-    ) {
-      if (listOne[listOnePointer] < listTwo[listTwoPointer]) {
-        list[listPointer] = listOne[listOnePointer];
-        listOnePointer++;
-        listPointer++;
-      } else {
-        list[listPointer] = listTwo[listTwoPointer];
-        listTwoPointer++;
-        listPointer++;
-      }
-    }
+  private merge = (listOne: number[], listTwo: number[]): number[] => {
+    let one: number = 0;
+    let two: number = 0;
+    let list: number[] = [];
 
-    // Till this point atleast one of the arrry will get exhausted
-    // List one got exhaused
-    if (listOnePointer === listOne.length) {
-      for (let i: number = listTwoPointer; i < listTwo.length; i++) {
-        list[listPointer] = listTwo[i];
-        listPointer++;
-      }
+    for (let i: number = 0; i < listOne.length + listTwo.length; i++) {
+      // List one exhausted
+      if (listOne.length <= one) return ([...list, ...listTwo.slice(two)]);
+      // List two exhausted
+      else if (listTwo.length <= two) return ([...list, ...listOne.slice(one)]);
+      else if (listOne[one] < listTwo[two] && one < listOne.length) list.push(listOne[one++]);
+      else if (two < listTwo.length) list.push(listTwo[two++]);
     }
-
-    // List two got exhaused
-    if (listTwoPointer === listTwo.length) {
-      for (let i: number = listOnePointer; i < listOne.length; i++) {
-        list[listPointer] = listTwo[i];
-        listPointer++;
-      }
-    }
-
-    return list;
+    return (list);
   };
 
-
-  public heapSort = async (list : number[]) : Promise<void> => {
-    let heap : Heap = new Heap();
-    heap.heapify(list);
-    // console.log('After hepification : ' + array);
-    // console.log('The min is ' + heap.min());
-    // console.log('After min heap is : ' + heap.heap);
-    for(let i : number = 0 ; heap.size!== 0 ; i++){
-      list[i] = heap.min();
-      this.setHeight({ type: "UPDATE", payload: list });
-      await this.sleep(this.delay);
-    }
-  };
+  // public quickSort = async (list : number[]) : Promise<void> => {
+  // };
 }

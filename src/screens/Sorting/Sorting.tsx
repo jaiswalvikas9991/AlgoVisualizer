@@ -42,6 +42,9 @@ const Sorting: React.FC = () => {
       case 2:
         sort.heapSort([...height]);
         break;
+      case 3:
+        sort.mergeSort([...height], [...height]);
+        break;
       default:
         sort.selectionSort([...height]);
     }
@@ -58,7 +61,7 @@ const Sorting: React.FC = () => {
         <Button onClick={start}>Start</Button>
         <DropdownButton
           id="dimension-select-dropdown-button"
-          title={["Selection Sort", "Bubble Sort", "Heap Sort"][tabs]}
+          title={["Selection Sort", "Bubble Sort", "Heap Sort", "Merge Sort"][tabs]}
         >
           <Dropdown.Item as="button" onClick={() => onClick(0)}>
             Selection Sort
@@ -69,6 +72,10 @@ const Sorting: React.FC = () => {
 
           <Dropdown.Item as="button" onClick={() => onClick(2)}>
             Heap Sort
+          </Dropdown.Item>
+
+          <Dropdown.Item as="button" onClick={() => onClick(3)}>
+            Merge Sort
           </Dropdown.Item>
         </DropdownButton>
       </div>
