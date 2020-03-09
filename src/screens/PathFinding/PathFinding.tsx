@@ -6,6 +6,7 @@ const PathFinding: React.FC = () => {
     // This handels the dimension of the grid
     const [dimension, setDimension]: [number, Dispatch<SetStateAction<number>>] = useState(30);
 
+    // This is to check for mouse pressed state
     const [mouseCapture, setMouseCapture] = useState(false);
 
     // This function is to reset the grid
@@ -19,6 +20,21 @@ const PathFinding: React.FC = () => {
             }
         }
         return connectedStatus;
+    };
+
+    const getInitialColor = (newDimension: number = dimension): string[][][] => {
+        const onColor: string[][] = [];
+        const offColor: string[][] = [];
+
+        for (let i: number = 0; i < newDimension; i++) {
+            onColor.push([]);
+            offColor.push([]);
+            for (let j: number = 0; j < newDimension; j++) {
+                onColor[i].push('white');
+                offColor[i].push('red');
+            }
+        }
+        return ([onColor, offColor]);
     };
 
     // This is where we create the reducer
@@ -45,6 +61,16 @@ const PathFinding: React.FC = () => {
                 return state;
         }
     };
+
+    const [onColor, setOnColor]: [
+        string[][],
+        Dispatch<string[][]>
+    ] = useState(getInitialColor()[0]);
+    const [offColor, _]: [
+        string[][],
+        Dispatch<string[][]>
+    ] = useState(getInitialColor()[1]);
+
     // Here we make it a reducer
     const [openList, setOpenList]: [
         boolean[][],
@@ -62,13 +88,18 @@ const PathFinding: React.FC = () => {
     };
 
     const start = async (): Promise<void> => {
-        console.log(openList);
+        // console.log(openList);
         let pathFinding: PathFindingAlgos = new PathFindingAlgos();
-        // console.log('Algo called');
         let path: number[][] = await pathFinding.backTracking(openList, [0, 0]);
-        // console.log('algo finised');
-        console.log(path);
-        setOpenList({ type: "BULK", payload: path });
+        // setOpenList({ type: "BULK", payload: path });
+
+        console.log('algo finshed');
+        // Changing the state of the onColor
+        let onColorList: string[][] = [...onColor];
+        path.forEach((index: number[]) => {
+            onColorList[index[0]][index[1]] = 'blue';
+        });
+        setOnColor(onColorList);
     };
 
     // This handels the setting of the new  dimension
@@ -112,7 +143,7 @@ const PathFinding: React.FC = () => {
                 {
                     openList.map((value: boolean[], i: number) => {
                         return value.map((val: boolean, j: number) => (
-                            <Box key={i * dimension + j} position={[i, j]} open={val} mouseCapture={mouseCapture} setOpenList={setOpenList} />
+                            <Box key={i * dimension + j} offColor={offColor[i][j]} onColor={onColor[i][j]} position={[i, j]} open={val} mouseCapture={mouseCapture} setOpenList={setOpenList} />
                         ));
                     })
                 }
@@ -128,7 +159,9 @@ type Props = {
     open: boolean,
     mouseCapture: boolean,
     setOpenList: Dispatch<{ type: string; payload: number[] }>,
-    position: number[]
+    position: number[],
+    onColor: string,
+    offColor: string
 }
 
 const Box = (props: Props) => {
@@ -145,7 +178,7 @@ const Box = (props: Props) => {
                 style={{
                     width: 20,
                     height: 20,
-                    background: props.open ? "white" : "red",
+                    background: props.open ? props.onColor : props.offColor,
                     border: 0.25,
                     borderColor: "black",
                     borderStyle: "solid"
@@ -155,7 +188,7 @@ const Box = (props: Props) => {
             // onMouseMove={handleMouseMove}
             />
         ),
-        [props.open, props.mouseCapture]
+        [props.open, props.mouseCapture, props.onColor, props.offColor]
     );
 };
 

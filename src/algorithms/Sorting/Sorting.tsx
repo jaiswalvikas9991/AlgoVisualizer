@@ -1,4 +1,5 @@
 import { Dispatch } from "react";
+import Heap from "./Heap";
 
 export default class Sorting {
   private setHeight: Dispatch<{ type: string; payload: number[] }>;
@@ -120,5 +121,19 @@ export default class Sorting {
     }
 
     return list;
+  };
+
+
+  public heapSort = async (list : number[]) : Promise<void> => {
+    let heap : Heap = new Heap();
+    heap.heapify(list);
+    // console.log('After hepification : ' + array);
+    // console.log('The min is ' + heap.min());
+    // console.log('After min heap is : ' + heap.heap);
+    for(let i : number = 0 ; heap.size!== 0 ; i++){
+      list[i] = heap.min();
+      this.setHeight({ type: "UPDATE", payload: list });
+      await this.sleep(this.delay);
+    }
   };
 }

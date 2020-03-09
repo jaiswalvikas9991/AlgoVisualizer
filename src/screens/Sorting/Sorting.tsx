@@ -39,12 +39,16 @@ const Sorting: React.FC = () => {
       case 1:
         sort.bubbleSort([...height]);
         break;
+      case 2:
+        sort.heapSort([...height]);
+        break;
       default:
         sort.selectionSort([...height]);
     }
   };
 
   const onClick = (index: number): void => {
+    setHeight({ type: "UPDATE", payload: randomMatrix(200) });
     setTabs(index);
   };
 
@@ -54,13 +58,17 @@ const Sorting: React.FC = () => {
         <Button onClick={start}>Start</Button>
         <DropdownButton
           id="dimension-select-dropdown-button"
-          title={["Selection Sort", "Bubble Sort"][tabs]}
+          title={["Selection Sort", "Bubble Sort", "Heap Sort"][tabs]}
         >
           <Dropdown.Item as="button" onClick={() => onClick(0)}>
             Selection Sort
           </Dropdown.Item>
           <Dropdown.Item as="button" onClick={() => onClick(1)}>
             Bubble Sort
+          </Dropdown.Item>
+
+          <Dropdown.Item as="button" onClick={() => onClick(2)}>
+            Heap Sort
           </Dropdown.Item>
         </DropdownButton>
       </div>

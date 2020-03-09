@@ -1,14 +1,7 @@
 export default class PathFindingAlgos {
-
-
-
     private sleep = (ms: number): Promise<void> => {
         return new Promise(resolve => setTimeout(resolve, ms));
     };
-
-    // public backTracking = async (matrix: boolean[][], position: number[] = [0, 0]): Promise<void> => {
-    //     let ans : number[][] = this.backTrackingHelper(matrix, position);
-    // };
 
     public backTracking = async (matrix: boolean[][], position: number[]): Promise<number[][]> => {
         // This is to pause the excecution of the program
