@@ -90,16 +90,17 @@ const PathFinding: React.FC = () => {
     const start = async (): Promise<void> => {
         // console.log(openList);
         let pathFinding: PathFindingAlgos = new PathFindingAlgos();
-        let path: number[][] = await pathFinding.backTracking(openList, [0, 0]);
-        // setOpenList({ type: "BULK", payload: path });
+        // let path: number[][] = await pathFinding.backTracking(openList, [0, 0]);
+        // // setOpenList({ type: "BULK", payload: path });
 
-        console.log('algo finshed');
-        // Changing the state of the onColor
-        let onColorList: string[][] = [...onColor];
-        path.forEach((index: number[]) => {
-            onColorList[index[0]][index[1]] = 'blue';
-        });
-        setOnColor(onColorList);
+        // console.log('algo finshed');
+        // // Changing the state of the onColor
+        // let onColorList: string[][] = [...onColor];
+        // path.forEach((index: number[]) => {
+        //     onColorList[index[0]][index[1]] = 'blue';
+        // });
+        // setOnColor(onColorList);
+        pathFinding.dijkstra();
     };
 
     // This handels the setting of the new  dimension

@@ -1,3 +1,5 @@
+import Graph from "./Graph";
+
 export default class PathFindingAlgos {
     private sleep = (ms: number): Promise<void> => {
         return new Promise(resolve => setTimeout(resolve, ms));
@@ -22,5 +24,9 @@ export default class PathFindingAlgos {
             if (a !== []) return ([[i, j], ...a]);
         }
         return ([]);
+    };
+
+    public dijkstra = () => {
+        let graph : Graph<number>  = new Graph<number>();
     };
 }
