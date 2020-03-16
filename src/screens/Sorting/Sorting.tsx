@@ -44,7 +44,7 @@ const Sorting: React.FC = () => {
         break;
       case 3:
         let arrayM : number[] = [...height];
-        sort.mergeSort(arrayM, arrayM);
+        sort.mergesort(arrayM);
         break;
       case 4:
         let arrayQ : number[] = [...height];

@@ -114,7 +114,7 @@ export default class Sorting {
     return (list);
   };
 
-  public partition = async (arr: number[], low: number, high: number) : Promise<number> => {
+  public partition = async (arr: number[], low: number, high: number): Promise<number> => {
     let pivot: number = arr[high];
     let i: number = (low - 1);
     for (let j: number = low; j < high; j++) {
@@ -140,5 +140,46 @@ export default class Sorting {
       await this.quickSort(arr, pi + 1, high);
     }
     this.setHeight({ type: "UPDATE", payload: arr });
+  }
+
+
+  public mergeF = async (A: number[], temp: number[], from: number, mid: number, to: number): Promise<void> => {
+    let k: number = from;
+    let i: number = from;
+    let j: number = mid + 1;
+    while (i <= mid && j <= to) {
+      if (A[i] < A[j]) {
+        temp[k++] = A[i++];
+      } else {
+        temp[k++] = A[j++];
+      }
+      this.setHeight({ type: "UPDATE", payload: temp });
+      await this.sleep(this.delay);
+    }
+    while (i < A.length && i <= mid) {
+      temp[k++] = A[i++];
+      // this.setHeight({ type: "UPDATE", payload: temp });
+      // await this.sleep(this.delay);
+    }
+    for (i = from; i <= to; i++) {
+      A[i] = temp[i];
+      // this.setHeight({ type: "UPDATE", payload: A });
+      // await this.sleep(this.delay);
+    }
+  }
+
+  public mergesort = async (A: number[]): Promise<void> => {
+    let low: number = 0;
+    let high: number = A.length - 1;
+    let temp: number[] = [...A];
+    for (let m: number = 1; m <= high - low; m = 2 * m) {
+      for (let i: number = low; i < high; i += 2 * m) {
+        let from: number = i;
+        let mid: number = i + m - 1;
+        let to: number = Math.min(i + 2 * m - 1, high);
+
+        await this.mergeF(A, temp, from, mid, to);
+      }
+    }
   }
 }
