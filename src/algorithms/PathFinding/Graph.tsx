@@ -4,7 +4,7 @@ SECTION    We are using adjacency list representation because our graph will be 
 export default class Graph<T> {
     // public edges: Edge<T>[] = [];
     public vertices: Map<number, Vertex<T>> = new Map<number, Vertex<T>>();
-    public isDirected: boolean = false;
+    public isDirected: boolean = true;
 
 
     // This function will return if the vertex exists in the graph and if yes return it
@@ -37,7 +37,7 @@ export default class Graph<T> {
     };
 }
 
-class Vertex<T> {
+export class Vertex<T> {
     public id: number;
     public data: T;
     // This the connections that the graph has
@@ -66,8 +66,8 @@ class Vertex<T> {
 }
 
 // This is how a edge looks like
-class Edge<T> {
-    public isDirected: boolean = false;
+export class Edge<T> {
+    public isDirected: boolean = true;
     public from: Vertex<T>;
     public to: Vertex<T>;
     public weight?: number;

@@ -1,106 +1,79 @@
 import React, { useState, useMemo, useReducer, Dispatch, SetStateAction } from "react";
 import { Button, DropdownButton, Dropdown } from "react-bootstrap";
 import PathFindingAlgos from "../../algorithms/PathFinding/PathFindingAlgos";
+import { onColor, offColor, pathMarkColor } from './constants';
+
 
 const PathFinding: React.FC = () => {
     // This handels the dimension of the grid
     const [dimension, setDimension]: [number, Dispatch<SetStateAction<number>>] = useState(30);
-
-    // This is to check for mouse pressed state
     const [mouseCapture, setMouseCapture] = useState(false);
 
     // This function is to reset the grid
-    const getInitialState = (newDimension: number = dimension): boolean[][] => {
-        const connectedStatus: boolean[][] = [];
+    const getInitialState = (newDimension: number = dimension): string[][] => {
+        const connectedStatus: string[][] = [];
 
         for (let i: number = 0; i < newDimension; i++) {
             connectedStatus.push([]);
             for (let j: number = 0; j < newDimension; j++) {
-                connectedStatus[i].push(true);
+                connectedStatus[i].push(onColor);
             }
         }
         return connectedStatus;
     };
 
-    const getInitialColor = (newDimension: number = dimension): string[][][] => {
-        const onColor: string[][] = [];
-        const offColor: string[][] = [];
-
-        for (let i: number = 0; i < newDimension; i++) {
-            onColor.push([]);
-            offColor.push([]);
-            for (let j: number = 0; j < newDimension; j++) {
-                onColor[i].push('white');
-                offColor[i].push('red');
-            }
-        }
-        return ([onColor, offColor]);
-    };
-
     // This is where we create the reducer
     const openListReducer = (
-        state: boolean[][],
+        state: string[][],
         action: { type: string; payload: any }
-    ): boolean[][] => {
+    ): string[][] => {
         switch (action.type) {
             case "UPDATE":
-                let array: boolean[][] = [...state];
-                array[action.payload[0]][action.payload[1]] = false;
+                // * This updates works with the positions works to make the block off
+                let array: string[][] = [...state];
+                array[action.payload[0]][action.payload[1]] = offColor;
                 return array;
 
             case "RESET":
                 return [...getInitialState()];
 
-            case "BULK": let list: boolean[][] = [...state];
-                action.payload.forEach((value: number[]) => {
-                    list[value[0]][value[1]] = false;
-                });
+            case "BULK": let list: string[][] = [...action.payload]
                 return (list);
+
+            case "PATH": let onColorList: string[][] = [...state];
+                action.payload.forEach((index: number[]) => {
+                    onColorList[index[0]][index[1]] = pathMarkColor;
+                });
+                return (onColorList);
 
             default:
                 return state;
         }
     };
 
-    const [onColor, setOnColor]: [
-        string[][],
-        Dispatch<string[][]>
-    ] = useState(getInitialColor()[0]);
-    const [offColor, _]: [
-        string[][],
-        Dispatch<string[][]>
-    ] = useState(getInitialColor()[1]);
 
-    // Here we make it a reducer
+    // * Here we make it a reducer
     const [openList, setOpenList]: [
-        boolean[][],
+        string[][],
         Dispatch<{ type: string; payload: any }>
     ] = useReducer(openListReducer, getInitialState());
 
-    // This is called when mouse button is pressed
+    // * This is called when mouse button is pressed
     const handleDown = () => {
         setMouseCapture(true);
     };
 
-    // This is called when mouse is realsed
+    // * This is called when mouse is realsed
     const handleUp = () => {
         setMouseCapture(false);
     };
 
     const start = async (): Promise<void> => {
-        // console.log(openList);
-        let pathFinding: PathFindingAlgos = new PathFindingAlgos();
-        // let path: number[][] = await pathFinding.backTracking(openList, [0, 0]);
-        // // setOpenList({ type: "BULK", payload: path });
-
-        // console.log('algo finshed');
-        // // Changing the state of the onColor
-        // let onColorList: string[][] = [...onColor];
-        // path.forEach((index: number[]) => {
-        //     onColorList[index[0]][index[1]] = 'blue';
-        // });
-        // setOnColor(onColorList);
-        pathFinding.dijkstra();
+        // setOpenList({type : "RESET" , payload : []});
+        let pathFinding: PathFindingAlgos = new PathFindingAlgos(setOpenList, 200);
+        pathFinding.breadthFirstSearch(openList, [0, 0]);
+        let path: number[][] = await pathFinding.breadthFirstSearch(openList, [0, 0]);
+        setOpenList({ type: "PATH", payload: path });
     };
 
     // This handels the setting of the new  dimension
@@ -142,9 +115,9 @@ const PathFinding: React.FC = () => {
                 onMouseUp={handleUp}
             >
                 {
-                    openList.map((value: boolean[], i: number) => {
-                        return value.map((val: boolean, j: number) => (
-                            <Box key={i * dimension + j} offColor={offColor[i][j]} onColor={onColor[i][j]} position={[i, j]} open={val} mouseCapture={mouseCapture} setOpenList={setOpenList} />
+                    openList.map((value: string[], i: number) => {
+                        return value.map((val: string, j: number) => (
+                            <Box key={i * dimension + j} position={[i, j]} open={val} mouseCapture={mouseCapture} setOpenList={setOpenList} />
                         ));
                     })
                 }
@@ -157,18 +130,17 @@ const PathFinding: React.FC = () => {
 
 type Props = {
     key: number,
-    open: boolean,
+    open: string,
     mouseCapture: boolean,
     setOpenList: Dispatch<{ type: string; payload: number[] }>,
     position: number[],
-    onColor: string,
-    offColor: string
 }
 
 const Box = (props: Props) => {
     // This is to handle he hovering effect
 
     const handleEnter = () => {
+        // * props.position is used to for hover effect
         if (props.open && props.mouseCapture) {
             props.setOpenList({ type: 'UPDATE', payload: props.position });
         }
@@ -179,7 +151,7 @@ const Box = (props: Props) => {
                 style={{
                     width: 20,
                     height: 20,
-                    background: props.open ? props.onColor : props.offColor,
+                    background: props.open,
                     border: 0.25,
                     borderColor: "black",
                     borderStyle: "solid"
@@ -189,7 +161,7 @@ const Box = (props: Props) => {
             // onMouseMove={handleMouseMove}
             />
         ),
-        [props.open, props.mouseCapture, props.onColor, props.offColor]
+        [props.open, props.mouseCapture]
     );
 };
 
