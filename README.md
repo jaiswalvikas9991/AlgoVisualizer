@@ -1,6 +1,13 @@
 # AlgoVisualizer
 A ReactJs based Web Application for visualization of Algorithms like Sorting, PathFinding etc.
 
+> How to install?
+  1. Clone the Repository
+  2. Navigate to the directory
+  3. Run "npm install"
+  4. Run "npm start"
+  5. Enjoy!!!
+
 > Bubble Sort
 
 ![BubbleSort](https://user-images.githubusercontent.com/48611968/77229802-e432ab80-6bb5-11ea-97c7-d3ef7716a5bf.gif)
