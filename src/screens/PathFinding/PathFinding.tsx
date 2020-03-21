@@ -1,13 +1,14 @@
 import React, { useState, useMemo, useReducer, Dispatch, SetStateAction } from "react";
 import { Button, DropdownButton, Dropdown } from "react-bootstrap";
-import PathFindingAlgos from "../../algorithms/PathFinding/PathFindingAlgos";
-import { onColor, offColor, pathMarkColor } from './constants';
+import PathFindingAlgos from "algorithms/PathFinding/PathFindingAlgos";
+import { onColor, offColor, pathMarkColor } from 'screens/PathFinding/constants';
 
 
 const PathFinding: React.FC = () => {
     // This handels the dimension of the grid
     const [dimension, setDimension]: [number, Dispatch<SetStateAction<number>>] = useState(30);
     const [mouseCapture, setMouseCapture] = useState(false);
+    const [algo, setAlgo] = useState(0);
 
     // This function is to reset the grid
     const getInitialState = (newDimension: number = dimension): string[][] => {
@@ -69,11 +70,12 @@ const PathFinding: React.FC = () => {
     };
 
     const start = async (): Promise<void> => {
-        // setOpenList({type : "RESET" , payload : []});
         let pathFinding: PathFindingAlgos = new PathFindingAlgos(setOpenList, 200);
-        // let path: number[][] = await pathFinding.breadthFirstSearch(openList, [0, 0]);
-        // setOpenList({ type: "PATH", payload: path });
-        pathFinding.dijkstra(openList, [0, 0])
+        switch (algo) {
+            case 0: pathFinding.backTracking(openList, [0, 0]); break;
+            case 1: pathFinding.breadthFirstSearch(openList, [0, 0]); break;
+            case 2: pathFinding.dijkstra(openList, [0, 0]);
+        }
     };
 
     // This handels the setting of the new  dimension
@@ -82,6 +84,10 @@ const PathFinding: React.FC = () => {
             setDimension(newDimension);
             setOpenList({ type: "RESET", payload: [-1, -1] });
         }
+    };
+
+    const onPress = (newAlgo: number): void => {
+        if (algo !== newAlgo) setAlgo(newAlgo);
     };
 
     return (
@@ -102,7 +108,24 @@ const PathFinding: React.FC = () => {
                         40
                         </Dropdown.Item>
                 </DropdownButton>
+
+                <DropdownButton
+                    id="dimension-select-dropdown-button"
+                    title={['BackTracking', 'Breadth First Search', "Dijkstra's Algorithm"][algo]}
+                >
+                    <Dropdown.Item as="button" onClick={() => onPress(0)}>
+                        BackTracking
+                        </Dropdown.Item>
+                    <Dropdown.Item as="button" onClick={() => onPress(1)}>
+                        Breadth First Search
+                        </Dropdown.Item>
+                    <Dropdown.Item as="button" onClick={() => onPress(2)}>
+                        Dijkstra's Algorithm
+                        </Dropdown.Item>
+                </DropdownButton>
             </div>
+
+
 
             <div
                 style={{

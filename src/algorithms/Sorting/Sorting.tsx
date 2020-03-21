@@ -1,5 +1,5 @@
 import { Dispatch } from "react";
-import NumberHeap from "./NumberHeap";
+import NumberHeap from "algorithms/Sorting/NumberHeap";
 
 export default class Sorting {
   private setHeight: Dispatch<{ type: string; payload: number[] }>;

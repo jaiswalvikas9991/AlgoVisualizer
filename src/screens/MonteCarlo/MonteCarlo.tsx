@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useReducer, Dispatch } from "react";
-import Percolation from "../../algorithms/QuickUnionFind/Percolation";
+import Percolation from "algorithms/QuickUnionFind/Percolation";
 import { Button, DropdownButton, Dropdown } from "react-bootstrap";
 
 const MonteCarlo: React.FC = () => {

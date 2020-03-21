@@ -1,6 +1,6 @@
 import React, { useReducer, useMemo, Dispatch, useState } from "react";
 import { Button, DropdownButton, Dropdown } from "react-bootstrap";
-import SortingAlgo from "../../algorithms/Sorting/Sorting";
+import SortingAlgo from "algorithms/Sorting/Sorting";
 
 const Sorting: React.FC = () => {
   const randomMatrix = (dimension: number = 20): number[] => {

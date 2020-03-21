@@ -1,8 +1,8 @@
-import Graph, { Vertex, Edge } from "./Graph";
-import { onColor } from '../../screens/PathFinding/constants';
-import Queue from "./Queue";
+import Graph, { Vertex, Edge } from 'algorithms/PathFinding/Graph';
+import { onColor } from 'screens/PathFinding/constants';
+import Queue from 'algorithms/PathFinding/Queue';
 import { Dispatch } from "react";
-import VertexHeap from "./VertexHeap";
+import VertexHeap from "algorithms/PathFinding/VertexHeap";
 
 export default class PathFindingAlgos {
     setOpenList: Dispatch<{ type: string; payload: any }>;
@@ -15,22 +15,27 @@ export default class PathFindingAlgos {
         return new Promise(resolve => setTimeout(resolve, ms));
     };
 
-    public backTracking = async (matrix: string[][], position: number[]): Promise<number[][]> => {
+    public backTracking = async (matrix: string[][], position: number[]): Promise<void> => {
+        let path: number[][] = await this.backTrackingHelper(matrix, position);
+        this.setOpenList({ type: "PATH", payload: path });
+    };
+
+    private backTrackingHelper = async (matrix: string[][], position: number[]): Promise<number[][]> => {
         // *This is to pause the excecution of the program
-        await this.sleep(200);
+        await this.sleep(20);
 
         if (position[0] === matrix.length - 1 && position[1] === matrix.length - 1) return ([[matrix.length - 1, matrix.length - 1]]);
         let i: number = position[0]; let j: number = position[1];
 
         // *Checking wheter we can go right
         if (i + 1 < matrix.length && matrix[i + 1][j] === onColor) {
-            let a: number[][] = await this.backTracking(matrix, [i + 1, j]);
+            let a: number[][] = await this.backTrackingHelper(matrix, [i + 1, j]);
             if (a !== []) return ([[i, j], ...a]);
         }
 
         // *Checkinng wheather we can go down
         if (j + 1 < matrix.length && matrix[i][j + 1] === onColor) {
-            let a: number[][] = await this.backTracking(matrix, [i, j + 1]);
+            let a: number[][] = await this.backTrackingHelper(matrix, [i, j + 1]);
             if (a !== []) return ([[i, j], ...a]);
         }
         return ([]);

@@ -1,4 +1,4 @@
-import QuickUnionFind from "./QuickUnionFind";
+import QuickUnionFind from 'algorithms/QuickUnionFind/QuickUnionFind';
 
 // The row and coloumn numbering follows 1,1 numbering
 export default class Percolation {

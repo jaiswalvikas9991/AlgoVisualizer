@@ -1,5 +1,5 @@
-import Heap from "./Heap"
-import { Vertex } from "./Graph";
+import Heap from 'algorithms/PathFinding/Heap'
+import { Vertex } from 'algorithms/PathFinding/Graph';
 
 export default class VertexHeap extends Heap<Vertex<number>> {
     public compare(arg1: Vertex<number>, arg2: Vertex<number>): number {
