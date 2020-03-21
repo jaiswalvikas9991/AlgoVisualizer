@@ -71,9 +71,9 @@ const PathFinding: React.FC = () => {
     const start = async (): Promise<void> => {
         // setOpenList({type : "RESET" , payload : []});
         let pathFinding: PathFindingAlgos = new PathFindingAlgos(setOpenList, 200);
-        pathFinding.breadthFirstSearch(openList, [0, 0]);
-        let path: number[][] = await pathFinding.breadthFirstSearch(openList, [0, 0]);
-        setOpenList({ type: "PATH", payload: path });
+        // let path: number[][] = await pathFinding.breadthFirstSearch(openList, [0, 0]);
+        // setOpenList({ type: "PATH", payload: path });
+        pathFinding.dijkstra(openList, [0, 0])
     };
 
     // This handels the setting of the new  dimension

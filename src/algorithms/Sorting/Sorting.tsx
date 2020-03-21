@@ -1,5 +1,5 @@
 import { Dispatch } from "react";
-import Heap from "./Heap";
+import NumberHeap from "./NumberHeap";
 
 export default class Sorting {
   private setHeight: Dispatch<{ type: string; payload: number[] }>;
@@ -52,7 +52,7 @@ export default class Sorting {
   };
 
   public heapSort = async (list: number[]): Promise<void> => {
-    let heap: Heap = new Heap();
+    let heap: NumberHeap = new NumberHeap();
     heap.heapify(list);
     // console.log('After hepification : ' + array);
     // console.log('The min is ' + heap.min());

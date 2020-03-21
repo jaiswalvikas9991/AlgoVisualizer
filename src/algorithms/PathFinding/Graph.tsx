@@ -27,13 +27,18 @@ export default class Graph<T> {
     };
 
 
-    public connect = (from: number, to: number): Edge<T> | undefined => {
+    public connect = (from: number, to: number, type: string): Edge<T> | undefined => {
         let vertexFrom = this.vertexExists(from);
         let vertexTo = this.vertexExists(to);
         if (vertexFrom === undefined || vertexTo === undefined) return (undefined);
         let edge: Edge<T> | undefined = vertexFrom.isConnected(to);
         if (edge !== undefined) return (edge);
-        return (vertexFrom.connect(vertexTo));
+        switch (type) {
+            case 'positive': return (vertexFrom.connect(vertexTo, Math.floor(Math.random() * 5) + 1));
+            case 'negative': let value: number = Math.round(Math.random());
+                return (vertexFrom.connect(vertexTo, (Math.floor(Math.random() * 5) + 1) * (2 * value - 1)));
+        }
+        return (vertexFrom.connect(vertexTo, 1));
     };
 }
 
@@ -44,6 +49,7 @@ export class Vertex<T> {
     public edges: Edge<T>[] = [];
     // This is the node to which it has those connections
     public vertices: Vertex<T>[] = [];
+    public distance : number = Number.MAX_SAFE_INTEGER;;
 
     constructor(id: number, data: T) {
         this.id = id;
@@ -57,8 +63,8 @@ export class Vertex<T> {
         return (undefined);
     };
 
-    public connect = (vertex: Vertex<T>): Edge<T> => {
-        let edge: Edge<T> = new Edge<T>(this, vertex);
+    public connect = (vertex: Vertex<T>, weight: number): Edge<T> => {
+        let edge: Edge<T> = new Edge<T>(this, vertex, weight);
         this.edges.push(edge);
         this.vertices.push(vertex);
         return (edge);
@@ -70,10 +76,11 @@ export class Edge<T> {
     public isDirected: boolean = true;
     public from: Vertex<T>;
     public to: Vertex<T>;
-    public weight?: number;
+    public weight: number;
 
-    constructor(from: Vertex<T>, to: Vertex<T>) {
+    constructor(from: Vertex<T>, to: Vertex<T>, weight: number) {
         this.from = from;
         this.to = to;
+        this.weight = weight;
     }
 }

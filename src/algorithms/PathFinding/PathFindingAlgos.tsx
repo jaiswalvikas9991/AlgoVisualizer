@@ -2,6 +2,7 @@ import Graph, { Vertex, Edge } from "./Graph";
 import { onColor } from '../../screens/PathFinding/constants';
 import Queue from "./Queue";
 import { Dispatch } from "react";
+import VertexHeap from "./VertexHeap";
 
 export default class PathFindingAlgos {
     setOpenList: Dispatch<{ type: string; payload: any }>;
@@ -40,7 +41,7 @@ export default class PathFindingAlgos {
     private numToIndex = (index: number, dim: number): number[] => ([Math.floor(index / dim), index % dim]);
 
     // * This function makes the graph form the boolean matrix
-    public makeGraph = (matrix: string[][], graph: Graph<number>) => {
+    public makeGraph = (matrix: string[][], graph: Graph<number>, type: string) => {
         // * Making the required nodes
         for (let j: number = 0; j < matrix.length; j++) {
             for (let i: number = 0; i < matrix.length; i++) {
@@ -49,14 +50,16 @@ export default class PathFindingAlgos {
         }
 
         // * Connecting the required nodes
-        for (let j: number = 0; j < matrix.length; j++) {
-            for (let i: number = 0; i < matrix.length; i++) {
+        for (let i: number = 0; i < matrix.length; i++) {
+            for (let j: number = 0; j < matrix.length; j++) {
                 if (matrix[i][j] === onColor && i + 1 < matrix.length && matrix[i + 1][j] === onColor)
-                    graph.connect(this.indexToNum(i, j, matrix.length), this.indexToNum(i + 1, j, matrix.length))
+                    graph.connect(this.indexToNum(i, j, matrix.length), this.indexToNum(i + 1, j, matrix.length), type);
 
                 if (matrix[i][j] === onColor && j + 1 < matrix.length && matrix[i][j + 1] === onColor)
-                    graph.connect(this.indexToNum(i, j, matrix.length), this.indexToNum(i, j + 1, matrix.length))
+                    graph.connect(this.indexToNum(i, j, matrix.length), this.indexToNum(i, j + 1, matrix.length), type)
 
+                if (matrix[i][j] === onColor && i - 1 > 0 && matrix[i - 1][j] === onColor)
+                    graph.connect(this.indexToNum(i, j, matrix.length), this.indexToNum(i - 1, j, matrix.length), type)
                 // * Uncomment this if u want to allow diagnol traversal
                 // if (matrix[i][j] === onColor && i + 1 < matrix.length && j + 1 < matrix.length && matrix[i + 1][j + 1] === onColor)
                 //     graph.connect(this.indexToNum(i, j, matrix.length), this.indexToNum(i + 1, j + 1, matrix.length))
@@ -72,7 +75,7 @@ export default class PathFindingAlgos {
         // let path: Array<Array<number>> = new Array<Array<number>>();
 
         // * Graph is a Flat Data Structure
-        this.makeGraph(matrix, graph);
+        this.makeGraph(matrix, graph, 'unweighted');
 
         let queue: Queue<Vertex<number>> = new Queue<Vertex<number>>();
         let first: Vertex<number> | undefined = graph.vertexExists(this.indexToNum(position[0], position[1], matrix.length));
@@ -108,7 +111,7 @@ export default class PathFindingAlgos {
         }
         // * No we are back tracing the path for the getting the original path starting with the last vertex
         let path: Array<Array<number>> = this.backTrack(from, matrix.length - 1, matrix.length - 1, matrix.length);
-        this.setOpenList({type : "PATH", payload : path});
+        this.setOpenList({ type: "PATH", payload: path });
         return (path);
     };
 
@@ -132,13 +135,58 @@ export default class PathFindingAlgos {
         for (let j: number = 0; j < dims; j++) {
             matrix.push(value);
         }
-
         return (matrix);
     }
 
+    // * Dijkstra's algorithm is a generalization of Breadth First Search
     public dijkstra = (matrix: string[][], position: number[]) => {
         let graph: Graph<number> = new Graph<number>();
-        this.makeGraph(matrix, graph);
-        console.log(graph);
+
+        // * This is the path that I give back for rendering
+        // let path: Array<Array<number>> = new Array<Array<number>>();
+
+        // * Graph is a Flat Data Structure
+        this.makeGraph(matrix, graph, 'positive');
+
+        let heap: VertexHeap = new VertexHeap();
+        let first: Vertex<number> | undefined = graph.vertexExists(this.indexToNum(position[0], position[1], matrix.length));
+        // *Inserting the source vertex into the heap / Priority Queue
+        if (first !== undefined) {
+            first.distance = 0;
+            heap.insert(first);
+        }
+
+
+        // * This is some auxilary book keeping
+        // * This stored the distance
+        //let distance: Array<number> = this.initValue(-1, matrix.length * matrix.length);
+        // * This stores the value form where we reacthed this node
+        let from: Array<number> = this.initValue(-1, matrix.length * matrix.length);
+        let explored: Array<boolean> = this.initValue(false, matrix.length * matrix.length);
+        //distance[0] = 0;
+        from[0] = 0;
+
+        // * Till the queue is not empty
+        while (!heap.isEmpty()) {
+            console.log('While loop is running');
+            // * This is the edge we are currently processing
+            let vertex: Vertex<number> = heap.min();
+
+            if (!explored[vertex.id]) {
+                vertex.edges.forEach((edge: Edge<number>) => {
+                    let min: number = Math.min(vertex.distance + edge.weight, edge.to.distance);
+                    if (min !== edge.to.distance) {
+                        edge.to.distance = min;
+                        from[edge.to.id] = vertex.id;
+                    }
+                    heap.insert(edge.to);
+                });
+                explored[vertex.id] = true;
+            }
+        }
+        // * No we are back tracing the path for the getting the original path starting with the last vertex
+        let path: Array<Array<number>> = this.backTrack(from, matrix.length - 1, matrix.length - 1, matrix.length);
+        this.setOpenList({ type: "PATH", payload: path });
+        return (path);
     };
 }
