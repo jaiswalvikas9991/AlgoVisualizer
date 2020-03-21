@@ -35,3 +35,11 @@ A ReactJs based Web Application for visualization of Algorithms like Sorting, Pa
 > Monte Carlo Simulation
 
 ![MonteCarlo](https://user-images.githubusercontent.com/48611968/77230585-47730c80-6bbb-11ea-94b8-1dc464ee7644.gif)
+
+> Breadth First Search
+
+![BreadthFirstSearch](https://user-images.githubusercontent.com/48611968/77235731-46070b80-6bde-11ea-815f-9600c05c78c1.gif)
+
+> Dijkstra's Algorithm
+
+![DijkstraAlgorithm](https://user-images.githubusercontent.com/48611968/77235742-68008e00-6bde-11ea-8ff8-c4c72ee1c3be.gif)
