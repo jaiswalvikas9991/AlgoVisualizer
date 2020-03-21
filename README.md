@@ -12,3 +12,6 @@ A ReactJs based Web Application for visualization of Algorithms like Sorting, Pa
 
 > Merge Sort
 ![MergeSort](https://user-images.githubusercontent.com/48611968/77229835-1ba15800-6bb6-11ea-8e85-05292bb51db0.gif)
+
+> Monte Carlo Simulation
+![MonteCarlo](https://user-images.githubusercontent.com/48611968/77230585-47730c80-6bbb-11ea-94b8-1dc464ee7644.gif)
