@@ -11,31 +11,36 @@ export default class PathFindingAlgos {
         this.setOpenList = setOpenList;
         this.delay = delay;
     }
-    private sleep = (ms: number): Promise<void> => {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    };
+    // private sleep = (ms: number): Promise<void> => {
+    //     return new Promise(resolve => setTimeout(resolve, ms));
+    // };
 
-    public backTracking = async (matrix: string[][], position: number[]): Promise<void> => {
+    public backTracking = async (matrix: string[][], position: number[]): Promise<boolean> => {
         let path: number[][] | undefined = await this.backTrackingHelper(matrix, position);
-        console.log("Algorithm done");
-        this.setOpenList({ type: "PATH", payload: path });
+        if (path !== undefined) {
+            this.setOpenList({ type: "PATH", payload: path });
+            return (true);
+        }
+        return (false);
     };
 
     private backTrackingHelper = async (matrix: string[][], position: number[]): Promise<number[][] | undefined> => {
+        //console.log('Inside the recursion');
         // *This is to pause the excecution of the program
-        console.log("inside funcitns")
-        await this.sleep(2);
+        //await this.sleep(2);
 
         if (position[0] === matrix.length - 1 && position[1] === matrix.length - 1) return ([[matrix.length - 1, matrix.length - 1]]);
+
+        //* Spreading the position list
         let i: number = position[0]; let j: number = position[1];
 
-        // *Checking whether we can go right
+        // *Checking whether we can go down
         if (i + 1 < matrix.length && matrix[i + 1][j] === onColor) {
             let a: number[][] | undefined = await this.backTrackingHelper(matrix, [i + 1, j]);
             if (a !== undefined) return ([[i, j], ...a]);
         }
 
-        // *Checking wheather we can go down
+        // *Checking wheather we can go right
         if (j + 1 < matrix.length && matrix[i][j + 1] === onColor) {
             let a: number[][] | undefined = await this.backTrackingHelper(matrix, [i, j + 1]);
             if (a !== undefined) return ([[i, j], ...a]);
@@ -76,7 +81,7 @@ export default class PathFindingAlgos {
     };
 
     // * Breadth First Search is used on unweighted graphs
-    public breadthFirstSearch = async (matrix: string[][], position: number[]): Promise<Array<Array<number>>> => {
+    public breadthFirstSearch = async (matrix: string[][], position: number[]): Promise<boolean> => {
         let graph: Graph<number> = new Graph<number>();
 
         // * This is the path that I give back for rendering
@@ -115,12 +120,17 @@ export default class PathFindingAlgos {
             });
         }
         // * No we are back tracing the path for the getting the original path starting with the last vertex
-        let path: Array<Array<number>> = this.backTrack(from, matrix.length - 1, matrix.length - 1, matrix.length);
-        this.setOpenList({ type: "PATH", payload: path });
-        return (path);
+        let path: Array<Array<number>> | undefined = this.backTrack(from, matrix.length - 1, matrix.length - 1, matrix.length);
+        if (path !== undefined) {
+            this.setOpenList({ type: "PATH", payload: path });
+            return (true);
+        }
+        return (false);
+
     };
 
-    private backTrack = (from: Array<number>, i: number, j: number, dim: number): Array<Array<number>> => {
+    private backTrack = (from: Array<number>, i: number, j: number, dim: number): Array<Array<number>> | undefined => {
+        if (from[this.indexToNum(dim - 1, dim - 1, dim)] === -1) return (undefined);
         let index: number[] = [i, j];
         // * This is where the path is saved
         let path: Array<Array<number>> = new Array<Array<number>>();
@@ -129,7 +139,6 @@ export default class PathFindingAlgos {
             // * Getting the num index to the next path
             let next: number = from[this.indexToNum(index[0], index[1], dim)];
             // * saving that index to the return path variable
-
             index = this.numToIndex(next, dim);
         }
         return (path);
@@ -144,7 +153,7 @@ export default class PathFindingAlgos {
     }
 
     // * Dijkstra's algorithm is a generalization of Breadth First Search
-    public dijkstra = (matrix: string[][], position: number[]) => {
+    public dijkstra = async (matrix: string[][], position: number[]): Promise<boolean> => {
         let graph: Graph<number> = new Graph<number>();
 
         // * This is the path that I give back for rendering
@@ -173,6 +182,7 @@ export default class PathFindingAlgos {
 
         // * Till the queue is not empty
         while (!heap.isEmpty()) {
+            //console.log('loop running');
             // * This is the edge we are currently processing
             let vertex: Vertex<number> = heap.min();
 
@@ -189,8 +199,12 @@ export default class PathFindingAlgos {
             }
         }
         // * No we are back tracing the path for the getting the original path starting with the last vertex
-        let path: Array<Array<number>> = this.backTrack(from, matrix.length - 1, matrix.length - 1, matrix.length);
-        this.setOpenList({ type: "PATH", payload: path });
-        return (path);
+        let path: Array<Array<number>> | undefined = this.backTrack(from, matrix.length - 1, matrix.length - 1, matrix.length);
+        if (path !== undefined) {
+            this.setOpenList({ type: "PATH", payload: path });
+            return (true);
+        }
+        //console.log('algorithm completed');
+        return (false);
     };
 }

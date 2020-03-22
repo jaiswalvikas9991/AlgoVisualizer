@@ -5,7 +5,7 @@ export default class Percolation {
   private n: number;
   private grid: boolean[][];
   private connection: QuickUnionFind;
-  private _numberOfOpenSites: number = 0;
+  public _numberOfOpenSites: number = 0;
 
   // creates n-by-n grid, with all sites initially blocked
   constructor(n: number) {

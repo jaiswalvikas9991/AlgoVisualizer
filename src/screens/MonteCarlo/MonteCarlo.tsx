@@ -14,6 +14,17 @@ const MonteCarlo: React.FC = () => {
 
   // const [mouseCaptureState, setMouseCaptureState] = useState(false);
   const [dimension, setDimension]: [number, Function] = useState(30);
+  const numberReducer = (state: number, action: { type: string, payload: number }): number => {
+    switch (action.type) {
+      case "UPDATE": return (action.payload);
+      case "RESET": return (0);
+      default: return (state);
+    }
+  };
+  const [number, setNumber]: [
+    number,
+    Dispatch<{ type: string; payload: number }>
+  ] = useReducer(numberReducer, 0);
 
   const getInitialState = (newDimension: number = dimension): boolean[] => {
     const openStatus: boolean[] = [];
@@ -50,13 +61,6 @@ const MonteCarlo: React.FC = () => {
     Dispatch<{ type: string; payload: number }>
   ] = useReducer(openListReducer, getInitialState());
 
-  // const handleDown = () => {
-  //   setMouseCaptureState(true);
-  // };
-
-  // const handleUp = () => {
-  //   setMouseCaptureState(false);
-  // };
 
   const sleep = (ms: number): Promise<void> => {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -75,12 +79,14 @@ const MonteCarlo: React.FC = () => {
         payload: dimension * (row - 1) + (col - 1)
       });
     }
+    setNumber({ type: "UPDATE", payload: system.numberOfOpenSites() });
   };
 
-  const onClick = (newDimension: number, newTab: number): void => {
+  const onClick = (newDimension: number, _: number): void => {
     if (newDimension !== dimension) {
       setDimension(newDimension);
       setOpenList({ type: "RESET", payload: -1 });
+      setNumber({ type: "UPDATE", payload: 0 });
     }
   };
 
@@ -104,6 +110,20 @@ const MonteCarlo: React.FC = () => {
         </DropdownButton>
       </div>
 
+      <h2 style ={{color : "#4EC5F1"}}>
+        Monte Carlo Simulation
+      </h2>
+
+
+      <div style={{ display: 'flex', flexDirection: 'row' }}>
+        <p>{`Number of Open Sites : ${number}`}</p>
+        <div style={{ width: 20 }}></div>
+        <p>{`Number of Closed Sites : ${dimension * dimension - number}`}</p>
+        <div style={{ width: 20 }}></div>
+        <p>{`Average : ${(number) / (dimension * dimension - number)}`}</p>
+      </div>
+
+
       <div
         style={{
           display: "flex",
@@ -111,8 +131,8 @@ const MonteCarlo: React.FC = () => {
           flexWrap: "wrap",
           width: dimension * 20
         }}
-        // onMouseDown={handleDown}
-        // onMouseUp={handleUp}
+      // onMouseDown={handleDown}
+      // onMouseUp={handleUp}
       >
         {[...Array(dimension * dimension)].map((_, index) => (
           <Box key={index} index={index} open={openList[index]} />
@@ -231,10 +251,10 @@ const Box = (props: Props) => {
           borderColor: "black",
           borderStyle: "solid"
         }}
-        // onClick={handleClick}
-        // onMouseEnter={handleEnter}
-        // onMouseOut={handleOut}
-        // onMouseMove={handleMouseMove}
+      // onClick={handleClick}
+      // onMouseEnter={handleEnter}
+      // onMouseOut={handleOut}
+      // onMouseMove={handleMouseMove}
       />
     ),
     [props.open]

@@ -9,6 +9,8 @@ const PathFinding: React.FC = () => {
     const [dimension, setDimension]: [number, Dispatch<SetStateAction<number>>] = useState(30);
     const [mouseCapture, setMouseCapture] = useState(false);
     const [algo, setAlgo] = useState(0);
+    const [pathFound, setPathFound]: [any, Dispatch<SetStateAction<any>>] = useState(undefined);
+    const [width, setWidth] = useState(20);
 
     // This function is to reset the grid
     const getInitialState = (newDimension: number = dimension): string[][] => {
@@ -74,9 +76,14 @@ const PathFinding: React.FC = () => {
     const start = async (): Promise<void> => {
         let pathFinding: PathFindingAlgos = new PathFindingAlgos(setOpenList, 200);
         switch (algo) {
-            case 0: pathFinding.backTracking(openList, [0, 0]);break;
-            case 1: pathFinding.breadthFirstSearch(openList, [0, 0]); break;
-            case 2: pathFinding.dijkstra(openList, [0, 0]);
+            case 0: let pathBT: undefined | boolean = await pathFinding.backTracking(openList, [0, 0]);
+                setPathFound(pathBT);
+                break;
+            case 1: let pathBF: undefined | boolean = await pathFinding.breadthFirstSearch(openList, [0, 0]);
+                setPathFound(pathBF);
+                break;
+            case 2: let pathDJ: undefined | boolean = await pathFinding.dijkstra(openList, [0, 0]);
+                setPathFound(pathDJ);
         }
     };
 
@@ -84,14 +91,22 @@ const PathFinding: React.FC = () => {
     const onClick = (newDimension: number, _: number): void => {
         if (newDimension !== dimension) {
             setDimension(newDimension);
+            setPathFound(undefined);
             setOpenList({ type: "RESET", payload: [-1, -1] });
         }
     };
 
     const onPress = (newAlgo: number): void => {
         if (algo !== newAlgo) {
-            setOpenList({ type: "RESET", payload: [] })
+            setOpenList({ type: "RESET", payload: [] });
+            setPathFound(undefined);
             setAlgo(newAlgo);
+        }
+    };
+
+    const onWidth = (newWeight: number): void => {
+        if (width !== newWeight) {
+            setWidth(newWeight);
         }
     };
 
@@ -101,7 +116,7 @@ const PathFinding: React.FC = () => {
                 <Button onClick={start}>Start</Button>
                 <DropdownButton
                     id="dimension-select-dropdown-button"
-                    title="Select Dimension"
+                    title={`Set Dimension - ${dimension}`}
                 >
                     <Dropdown.Item as="button" onClick={() => onClick(20, 0)}>
                         20
@@ -128,24 +143,47 @@ const PathFinding: React.FC = () => {
                         Dijkstra's Algorithm
                         </Dropdown.Item>
                 </DropdownButton>
+
+                <DropdownButton
+                    id="dimension-select-dropdown-button"
+                    title={`Select Height - ${width}`}
+                >
+                    <Dropdown.Item as="button" onClick={() => onWidth(20)}>
+                        20
+                        </Dropdown.Item>
+                    <Dropdown.Item as="button" onClick={() => onWidth(30)}>
+                        30
+                        </Dropdown.Item>
+                    <Dropdown.Item as="button" onClick={() => onWidth(40)}>
+                        40
+                        </Dropdown.Item>
+                </DropdownButton>
+
+
             </div>
-
-
+            {pathFound !== undefined &&
+                (
+                    <p style={{ color: pathFound ? '#4fe896' : '#4EC5F1', fontSize: 20 }}>
+                        {pathFound ? "Path Found" : "Path cannot be Reached"}
+                    </p>
+                )
+            }
 
             <div
                 style={{
                     display: "flex",
                     flexDirection: "row",
                     flexWrap: "wrap",
-                    width: dimension * 20
+                    width: dimension * width,
                 }}
                 onMouseDownCapture={handleDown}
                 onMouseUp={handleUp}
             >
+
                 {
                     openList.map((value: string[], i: number) => {
                         return value.map((val: string, j: number) => (
-                            <Box key={i * dimension + j} position={[i, j]} open={val} mouseCapture={mouseCapture} setOpenList={setOpenList} />
+                            <Box key={i * dimension + j} width={width} position={[i, j]} open={val} mouseCapture={mouseCapture} setOpenList={setOpenList} />
                         ));
                     })
                 }
@@ -162,6 +200,7 @@ type Props = {
     mouseCapture: boolean,
     setOpenList: Dispatch<{ type: string; payload: number[] }>,
     position: number[],
+    width: number
 }
 
 const Box = (props: Props) => {
@@ -177,7 +216,7 @@ const Box = (props: Props) => {
         () => (
             <div
                 style={{
-                    width: 20,
+                    width: props.width,
                     height: 20,
                     background: props.open,
                     border: 0.25,
@@ -189,7 +228,7 @@ const Box = (props: Props) => {
             // onMouseMove={handleMouseMove}
             />
         ),
-        [props.open, props.mouseCapture]
+        [props.open, props.mouseCapture, props.width]
     );
 };
 
