@@ -1,7 +1,7 @@
 import { Dispatch } from "react";
 import NumberHeap from "algorithms/Sorting/NumberHeap";
 
-export default class Sorting {
+export default class SortingAlgo {
   private setHeight: Dispatch<{ type: string; payload: number[] }>;
   private delay: number;
   public stop: boolean = false;
@@ -44,7 +44,8 @@ export default class Sorting {
           list[j + 1] = temp;
           shouldBreak = false;
           this.setHeight({ type: "UPDATE", payload: list });
-          await this.sleep(this.delay);
+          await this.sleep(this.delay * 0.0001);
+          //await this.sleep(this.delay);
         }
       }
       if (shouldBreak) break;
@@ -54,9 +55,6 @@ export default class Sorting {
   public heapSort = async (list: number[]): Promise<void> => {
     let heap: NumberHeap = new NumberHeap();
     heap.heapify(list);
-    // console.log('After hepification : ' + array);
-    // console.log('The min is ' + heap.min());
-    // console.log('After min heap is : ' + heap.heap);
     for (let i: number = 0; heap.size !== 0; i++) {
       list[i] = heap.min();
       this.setHeight({ type: "UPDATE", payload: list });
@@ -64,55 +62,6 @@ export default class Sorting {
     }
   };
 
-  // Helper method for merge sort
-  private getLeftSubArray = (list: number[]): number[] => {
-    let returnList: number[] = [];
-    for (let i: number = 0; i < Math.floor(list.length / 2); i++) returnList.push(list[i]);
-    return returnList;
-  };
-
-  // Helper method for merge sort
-  private getRightSubArray = (list: number[]): number[] => {
-    let returnList: number[] = [];
-    for (let i: number = Math.floor(list.length / 2); i < list.length; i++) returnList.push(list[i]);
-    return returnList;
-  };
-
-  private renderList = (list: number[], mainList: number[]): void => {
-    // let array: number[] = [...mainList];
-    // for (let i: number = 0; i < list.length; i++) array[i] = list[i];
-    this.setHeight({ type: "UPDATE", payload: [...list, ...mainList.slice(list.length)] });
-  };
-
-  public mergeSort = async (list: number[], mainList: number[]): Promise<number[]> => {
-    if (list.length < 2) return (list);
-    let left: number[] = this.getLeftSubArray(list);
-    let right: number[] = this.getRightSubArray(list);
-    let leftList: number[] = await this.mergeSort(left, mainList); // MergeSort on the right sub array
-    let rightList: number[] = await this.mergeSort(right, mainList); // MergeSort on the left sub array
-    let merged: number[] = await this.merge(leftList, rightList);
-    this.renderList(merged, mainList);
-    // this.setHeight({ type: "UPDATE", payload: merged});
-    await this.sleep(this.delay);
-    return (merged);
-  };
-
-  // This is a working merge function with running time of O(n)
-  private merge = async (listOne: number[], listTwo: number[]): Promise<number[]> => {
-    let one: number = 0;
-    let two: number = 0;
-    let list: number[] = [];
-
-    for (let i: number = 0; i < listOne.length + listTwo.length; i++) {
-      // List one exhausted
-      if (listOne.length <= one) return ([...list, ...listTwo.slice(two)]);
-      // List two exhausted
-      else if (listTwo.length <= two) return ([...list, ...listOne.slice(one)]);
-      else if (listOne[one] < listTwo[two] && one < listOne.length) list.push(listOne[one++]);
-      else if (two < listTwo.length) list.push(listTwo[two++]);
-    }
-    return (list);
-  };
 
   public partition = async (arr: number[], low: number, high: number): Promise<number> => {
     let pivot: number = arr[high];
@@ -124,17 +73,19 @@ export default class Sorting {
         arr[i] = arr[j];
         arr[j] = temp;
       }
-      await this.sleep(this.delay);
+      await this.sleep(this.delay * 0.1);
       this.setHeight({ type: "UPDATE", payload: arr });
     }
     let temp: number = arr[i + 1];
     arr[i + 1] = arr[high];
     arr[high] = temp;
+    this.setHeight({ type: "UPDATE", payload: arr });
     return i + 1;
   }
 
   public quickSort = async (arr: number[], low: number, high: number) => {
     if (low < high) {
+      //* On doing the quicksort partationing the pivot lands at its rightfull position
       let pi: number = await this.partition(arr, low, high);
       await this.quickSort(arr, low, pi - 1);
       await this.quickSort(arr, pi + 1, high);
@@ -142,8 +93,8 @@ export default class Sorting {
     this.setHeight({ type: "UPDATE", payload: arr });
   }
 
-
-  public mergeF = async (A: number[], temp: number[], from: number, mid: number, to: number): Promise<void> => {
+  //* This is bottom up merge sort
+  public merge = async (A: number[], temp: number[], from: number, mid: number, to: number): Promise<void> => {
     let k: number = from;
     let i: number = from;
     let j: number = mid + 1;
@@ -154,32 +105,46 @@ export default class Sorting {
         temp[k++] = A[j++];
       }
       this.setHeight({ type: "UPDATE", payload: temp });
-      await this.sleep(this.delay);
+      await this.sleep(this.delay * 0.1);
     }
     while (i < A.length && i <= mid) {
       temp[k++] = A[i++];
-      // this.setHeight({ type: "UPDATE", payload: temp });
-      // await this.sleep(this.delay);
+      this.setHeight({ type: "UPDATE", payload: temp });
+      await this.sleep(this.delay * 0.1);
     }
     for (i = from; i <= to; i++) {
       A[i] = temp[i];
-      // this.setHeight({ type: "UPDATE", payload: A });
-      // await this.sleep(this.delay);
     }
   }
 
-  public mergesort = async (A: number[]): Promise<void> => {
+  // * This is bottom up merge sort
+  //* Because the recursive version of the merge sort is not inplace hence tedious to render on the screen
+  public mergeSort = async (arr: number[]): Promise<void> => {
     let low: number = 0;
-    let high: number = A.length - 1;
-    let temp: number[] = [...A];
+    let high: number = arr.length - 1;
+    let temp: number[] = [...arr];
     for (let m: number = 1; m <= high - low; m = 2 * m) {
       for (let i: number = low; i < high; i += 2 * m) {
         let from: number = i;
         let mid: number = i + m - 1;
         let to: number = Math.min(i + 2 * m - 1, high);
 
-        await this.mergeF(A, temp, from, mid, to);
+        await this.merge(arr, temp, from, mid, to);
       }
     }
   }
+
+  public insertionSort = async (arr: number[]): Promise<void> => {
+    for (let i: number = 0; i < arr.length; i++) {
+      let idx: number = i;
+      while (arr[idx] < arr[idx - 1] && idx >= 1) {
+        let temp: number = arr[idx];
+        arr[idx] = arr[idx - 1];
+        arr[idx - 1] = temp;
+        idx--;
+        this.setHeight({ type: "UPDATE", payload: arr });
+        await this.sleep(this.delay * 0.000001);
+      }
+    }
+  };
 }

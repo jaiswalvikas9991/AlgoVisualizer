@@ -16,30 +16,33 @@ export default class PathFindingAlgos {
     };
 
     public backTracking = async (matrix: string[][], position: number[]): Promise<void> => {
-        let path: number[][] = await this.backTrackingHelper(matrix, position);
+        let path: number[][] | undefined = await this.backTrackingHelper(matrix, position);
+        console.log("Algorithm done");
         this.setOpenList({ type: "PATH", payload: path });
     };
 
-    private backTrackingHelper = async (matrix: string[][], position: number[]): Promise<number[][]> => {
+    private backTrackingHelper = async (matrix: string[][], position: number[]): Promise<number[][] | undefined> => {
         // *This is to pause the excecution of the program
-        await this.sleep(20);
+        console.log("inside funcitns")
+        await this.sleep(2);
 
         if (position[0] === matrix.length - 1 && position[1] === matrix.length - 1) return ([[matrix.length - 1, matrix.length - 1]]);
         let i: number = position[0]; let j: number = position[1];
 
-        // *Checking wheter we can go right
+        // *Checking whether we can go right
         if (i + 1 < matrix.length && matrix[i + 1][j] === onColor) {
-            let a: number[][] = await this.backTrackingHelper(matrix, [i + 1, j]);
-            if (a !== []) return ([[i, j], ...a]);
+            let a: number[][] | undefined = await this.backTrackingHelper(matrix, [i + 1, j]);
+            if (a !== undefined) return ([[i, j], ...a]);
         }
 
-        // *Checkinng wheather we can go down
+        // *Checking wheather we can go down
         if (j + 1 < matrix.length && matrix[i][j + 1] === onColor) {
-            let a: number[][] = await this.backTrackingHelper(matrix, [i, j + 1]);
-            if (a !== []) return ([[i, j], ...a]);
+            let a: number[][] | undefined = await this.backTrackingHelper(matrix, [i, j + 1]);
+            if (a !== undefined) return ([[i, j], ...a]);
         }
-        return ([]);
+        return (undefined);
     };
+
 
     // * This function flattens out the matrix to a array indices
     private indexToNum = (i: number, j: number, size: number): number => (i * size + j);
@@ -108,9 +111,6 @@ export default class PathFindingAlgos {
                     queue.enqueue(edge.to);
                     distance[edge.to.id] = distance[vertex.id] + 1;
                     from[edge.to.id] = vertex.id;
-                    // let path: Array<Array<number>> = this.backTrack(from,this.numToIndex(edge.to.id, matrix.length)[0], this.numToIndex(edge.to.id, matrix.length)[0], matrix.length);
-                    // this.setOpenList({type : "PATH", payload : path});
-                    // this.sleep(this.delay);
                 }
             });
         }
@@ -173,7 +173,6 @@ export default class PathFindingAlgos {
 
         // * Till the queue is not empty
         while (!heap.isEmpty()) {
-            console.log('While loop is running');
             // * This is the edge we are currently processing
             let vertex: Vertex<number> = heap.min();
 

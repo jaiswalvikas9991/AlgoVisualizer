@@ -69,7 +69,7 @@ const MonteCarlo: React.FC = () => {
       let col: number = Math.floor(Math.random() * dimension) + 1;
       // open works based on one indexing
       system.open(row, col);
-      await sleep(20);
+      await sleep(5);
       setOpenList({
         type: "UPDATE",
         payload: dimension * (row - 1) + (col - 1)
@@ -226,7 +226,7 @@ const Box = (props: Props) => {
         style={{
           width: 20,
           height: 20,
-          background: props.open ? "white" : "red",
+          background: props.open ? "white" : "#71d7f4",
           border: 0.25,
           borderColor: "black",
           borderStyle: "solid"

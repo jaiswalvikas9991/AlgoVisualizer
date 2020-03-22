@@ -1,8 +1,9 @@
 import React, { useReducer, useMemo, Dispatch, useState } from "react";
 import { Button, DropdownButton, Dropdown } from "react-bootstrap";
-import SortingAlgo from "algorithms/Sorting/Sorting";
+import SortingAlgo from "algorithms/Sorting/SortingAlgo";
 
 const Sorting: React.FC = () => {
+  const length: number = 200;
   const randomMatrix = (dimension: number = 20): number[] => {
     let array: number[] = [];
     for (let i: number = 0; i < dimension; i++) {
@@ -28,7 +29,7 @@ const Sorting: React.FC = () => {
   const [height, setHeight]: [
     number[],
     Dispatch<{ type: string; payload: number[] }>
-  ] = useReducer(heightReducer, randomMatrix(200));
+  ] = useReducer(heightReducer, randomMatrix(length));
 
   const start = (): void => {
     let sort: SortingAlgo = new SortingAlgo(setHeight, 50);
@@ -43,21 +44,26 @@ const Sorting: React.FC = () => {
         sort.heapSort([...height]);
         break;
       case 3:
-        let arrayM : number[] = [...height];
-        sort.mergesort(arrayM);
+        let arrayM: number[] = [...height];
+        sort.mergeSort(arrayM);
         break;
       case 4:
-        let arrayQ : number[] = [...height];
+        let arrayQ: number[] = [...height];
         sort.quickSort(arrayQ, 0, arrayQ.length - 1);
+        break;
+      case 5:
+        sort.insertionSort([...height]);
         break;
       default:
         sort.selectionSort([...height]);
     }
   };
 
-  const onClick = (index: number): void => {
-    setHeight({ type: "UPDATE", payload: randomMatrix(200) });
-    setTabs(index);
+  const onClick = (tab: number): void => {
+    if (tabs !== tab) {
+      setTabs(tab);
+      setHeight({ type: "UPDATE", payload: randomMatrix(length)});
+    }
   };
 
   return (
@@ -66,7 +72,7 @@ const Sorting: React.FC = () => {
         <Button onClick={start}>Start</Button>
         <DropdownButton
           id="dimension-select-dropdown-button"
-          title={["Selection Sort", "Bubble Sort", "Heap Sort", "Merge Sort", "Quick Sort"][tabs]}
+          title={["Selection Sort", "Bubble Sort", "Heap Sort", "Merge Sort", "Quick Sort", "Insertion Sort"][tabs]}
         >
           <Dropdown.Item as="button" onClick={() => onClick(0)}>
             Selection Sort
@@ -85,6 +91,10 @@ const Sorting: React.FC = () => {
 
           <Dropdown.Item as="button" onClick={() => onClick(4)}>
             Quick Sort
+          </Dropdown.Item>
+
+          <Dropdown.Item as="button" onClick={() => onClick(5)}>
+            Insertion Sort
           </Dropdown.Item>
         </DropdownButton>
       </div>
@@ -112,8 +122,8 @@ const Tower = (props: Props) => {
     () => (
       <div
         style={{
-          background: "red",
-          height: 500 * props.height,
+          background: "#71d7f4",
+          height: 750 * props.height,
           width: 20,
           border: 0.25,
           borderColor: "black",

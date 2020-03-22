@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useReducer, Dispatch, SetStateAction } from "react";
 import { Button, DropdownButton, Dropdown } from "react-bootstrap";
 import PathFindingAlgos from "algorithms/PathFinding/PathFindingAlgos";
-import { onColor, offColor, pathMarkColor } from 'screens/PathFinding/constants';
+import { onColor, offColor, pathMarkColor, endPointColor } from 'screens/PathFinding/constants';
 
 
 const PathFinding: React.FC = () => {
@@ -45,6 +45,8 @@ const PathFinding: React.FC = () => {
                 action.payload.forEach((index: number[]) => {
                     onColorList[index[0]][index[1]] = pathMarkColor;
                 });
+                onColorList[0][0] = endPointColor;
+                onColorList[onColorList.length - 1][onColorList.length - 1] = endPointColor;
                 return (onColorList);
 
             default:
@@ -72,7 +74,7 @@ const PathFinding: React.FC = () => {
     const start = async (): Promise<void> => {
         let pathFinding: PathFindingAlgos = new PathFindingAlgos(setOpenList, 200);
         switch (algo) {
-            case 0: pathFinding.backTracking(openList, [0, 0]); break;
+            case 0: pathFinding.backTracking(openList, [0, 0]);break;
             case 1: pathFinding.breadthFirstSearch(openList, [0, 0]); break;
             case 2: pathFinding.dijkstra(openList, [0, 0]);
         }
@@ -87,7 +89,10 @@ const PathFinding: React.FC = () => {
     };
 
     const onPress = (newAlgo: number): void => {
-        if (algo !== newAlgo) setAlgo(newAlgo);
+        if (algo !== newAlgo) {
+            setOpenList({ type: "RESET", payload: [] })
+            setAlgo(newAlgo);
+        }
     };
 
     return (

@@ -1,9 +1,9 @@
 import React from "react";
 import "./App.css";
 import { Tabs, Tab } from "react-bootstrap";
-import MonteCarlo from "./screens/MonteCarlo/MonteCarlo";
-import Sorting from "./screens/Sorting/Sorting";
-import PathFinding from "./screens/PathFinding/PathFinding";
+import MonteCarlo from "screens/MonteCarlo/MonteCarlo";
+import Sorting from "screens/Sorting/Sorting";
+import PathFinding from "screens/PathFinding/PathFinding";
 
 const App: React.FC = () => {
   return (
