@@ -1,49 +1,45 @@
-<<<<<<< HEAD
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
-## Available Scripts
-
-In the project directory, you can run:
-
-### `npm start`
-
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-=======
 # AlgoVisualizer
-A ReactJs based web application for visualization of algorithms like Sorting, PathFinding etc.
->>>>>>> 1b0374b9074af471cfdc7d2eaebf261440287e65
+A ReactJs based Web Application for visualization of Algorithms like Sorting, PathFinding etc.
+
+> How to install?
+  1. Clone the Repository
+  2. Navigate to the directory
+  3. Run "npm install"
+  4. Run "npm start"
+  5. Enjoy!!!
+
+> Bubble Sort
+
+![BubbleSort](https://user-images.githubusercontent.com/48611968/77229802-e432ab80-6bb5-11ea-97c7-d3ef7716a5bf.gif)
+
+> Selection Sort
+
+![SelectionSort](https://user-images.githubusercontent.com/48611968/77229813-fc0a2f80-6bb5-11ea-87ce-5311407dcc8b.gif)
+
+> Insertion Sort
+
+![InsertionSort](https://user-images.githubusercontent.com/48611968/77233971-1ac9ef80-6bd1-11ea-92af-0f1a4805372f.gif)
+
+> Merge Sort
+
+![MergeSort](https://user-images.githubusercontent.com/48611968/77229835-1ba15800-6bb6-11ea-8e85-05292bb51db0.gif)
+
+> Quick Sort
+
+![QuickSort](https://user-images.githubusercontent.com/48611968/77234479-b6a92a80-6bd4-11ea-8194-85aeac2d5753.gif)
+
+> Heap Sort
+
+![HeapSort](https://user-images.githubusercontent.com/48611968/77229829-0debd280-6bb6-11ea-8d04-ab796fcd0b18.gif)
+
+> Monte Carlo Simulation
+
+![MonteCarlo](https://user-images.githubusercontent.com/48611968/77230585-47730c80-6bbb-11ea-94b8-1dc464ee7644.gif)
+
+> Breadth First Search
+
+![BreadthFirstSearch](https://user-images.githubusercontent.com/48611968/77235731-46070b80-6bde-11ea-815f-9600c05c78c1.gif)
+
+> Dijkstra's Algorithm
+
+![DijkstraAlgorithm](https://user-images.githubusercontent.com/48611968/77235742-68008e00-6bde-11ea-8ff8-c4c72ee1c3be.gif)
