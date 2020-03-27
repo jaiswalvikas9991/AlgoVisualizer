@@ -3,28 +3,9 @@ import Percolation from "algorithms/QuickUnionFind/Percolation";
 import { Button, DropdownButton, Dropdown } from "react-bootstrap";
 
 const MonteCarlo: React.FC = () => {
-  // This is a function to introduce syncronous time delay
-  // const wait = ms => {
-  //   var start = Date.now(),
-  //     now = start;
-  //   while (now - start < ms) {
-  //     now = Date.now();
-  //   }
-  // };
-
   // const [mouseCaptureState, setMouseCaptureState] = useState(false);
   const [dimension, setDimension]: [number, Function] = useState(30);
-  const numberReducer = (state: number, action: { type: string, payload: number }): number => {
-    switch (action.type) {
-      case "UPDATE": return (action.payload);
-      case "RESET": return (0);
-      default: return (state);
-    }
-  };
-  const [number, setNumber]: [
-    number,
-    Dispatch<{ type: string; payload: number }>
-  ] = useReducer(numberReducer, 0);
+  const [number, setNumber]: [number, (param: number) => Promise<number>] = useAsyncState<number>(0);
 
   const getInitialState = (newDimension: number = dimension): boolean[] => {
     const openStatus: boolean[] = [];
@@ -50,11 +31,6 @@ const MonteCarlo: React.FC = () => {
       default:
         return state;
     }
-    // if (action.type === "UPDATE") {
-    //   let array = [...state];
-    //   array[action.payload] = true;
-    //   return array;
-    // }
   };
   const [openList, setOpenList]: [
     boolean[],
@@ -78,15 +54,15 @@ const MonteCarlo: React.FC = () => {
         type: "UPDATE",
         payload: dimension * (row - 1) + (col - 1)
       });
+      await setNumber(system.numberOfOpenSites());
     }
-    setNumber({ type: "UPDATE", payload: system.numberOfOpenSites() });
   };
 
   const onClick = (newDimension: number, _: number): void => {
     if (newDimension !== dimension) {
       setDimension(newDimension);
       setOpenList({ type: "RESET", payload: -1 });
-      setNumber({ type: "UPDATE", payload: 0 });
+      setNumber(0);
     }
   };
 
@@ -110,7 +86,7 @@ const MonteCarlo: React.FC = () => {
         </DropdownButton>
       </div>
 
-      <h2 style ={{color : "#4EC5F1"}}>
+      <h2 style={{ color: "#4EC5F1" }}>
         Monte Carlo Simulation
       </h2>
 
@@ -120,7 +96,9 @@ const MonteCarlo: React.FC = () => {
         <div style={{ width: 20 }}></div>
         <p>{`Number of Closed Sites : ${dimension * dimension - number}`}</p>
         <div style={{ width: 20 }}></div>
-        <p>{`Average : ${(number) / (dimension * dimension - number)}`}</p>
+        <p>{`Average(open / close) : ${(number) / (dimension * dimension - number)}`}</p>
+        <div style={{ width: 20 }}></div>
+        <p>{`Average(close / open) : ${number === 0 ? 0 : (dimension * dimension - number) / (number)}`}</p>
       </div>
 
 
@@ -142,55 +120,6 @@ const MonteCarlo: React.FC = () => {
   );
 };
 
-// class MonteCarlo extends Component {
-//   constructor(props) {
-//     super(props);
-//     this.state = {
-//       choosed: -1,
-//       dimension: 20
-//     };
-//   }
-
-//   start = () => {
-//     let system = new Percolation(this.state.dimension);
-//     while (!system.percolates()) {
-//       let row = Math.floor(Math.random() * this.state.dimension) + 1;
-//       let col = Math.floor(Math.random() * this.state.dimension) + 1;
-//       // open works based on one indexing
-//       system.open(row, col);
-//       this.setState(() => ({ choosed: this.state.dimension * (row - 1) + (col - 1) }));
-//       setTimeout(() => {
-//         //your code to be executed after 1 second
-//       }, 3000);
-//     }
-//     if (system.percolates) {
-//       alert("System has percoloated");
-//     }
-//   };
-
-//   render() {
-//     return (
-//       <>
-//         <button onClick={this.start}>Start</button>
-//         <div
-//           style={{
-//             display: "flex",
-//             flexDirection: "row",
-//             flexWrap: "wrap",
-//             width: "100%"
-//           }}
-//         >
-//           {[...Array(this.state.dimension * this.state.dimension)].map(
-//             (_, index) => (
-//               <Box index={index} choosed={this.state.choosed} />
-//             )
-//           )}
-//         </div>
-//       </>
-//     );
-//   }
-// }
-
 interface Props {
   key: number;
   open: boolean;
@@ -198,48 +127,6 @@ interface Props {
 }
 
 const Box = (props: Props) => {
-  // const blockReducer = (state, action) => {
-  //   switch (action.type) {
-  //     case "UPDATE":
-  //       return !state;
-  //     default:
-  //       return state;
-  //   }
-  // };
-  // const [open, setOpen] = useState(false);
-
-  // useEffect(() => {
-  //   if (!open && props.choosed === props.index) {
-  //     console.log("Call form box with index : " + props.index);
-  //     setOpen(true);
-  //   }
-  //   else{
-  //     setOpen(open);
-  //   }
-  // }, [props.choosed]);
-
-  // This is to handle he hovering effect
-  // const [inState, setInState] = useState(false);
-  // const handleClick = () => {
-  //   blockUpdate({ type: "UPDATE" });
-  // };
-  // const handleEnter = () => {
-  //   setInState(true);
-  // };
-  // const handleOut = () => {
-  //   setInState(false);
-  // };
-
-  // const handleMouseMove = event => {
-  //   if (props.mouseCaptureState && blockState) {
-  //     blockUpdate({ type: "UPDATE" });
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   blockUpdate(props.blockState);
-  // }, []);
-
   return useMemo(
     () => (
       <div
@@ -251,14 +138,21 @@ const Box = (props: Props) => {
           borderColor: "black",
           borderStyle: "solid"
         }}
-      // onClick={handleClick}
-      // onMouseEnter={handleEnter}
-      // onMouseOut={handleOut}
-      // onMouseMove={handleMouseMove}
       />
     ),
     [props.open]
   );
 };
+
+//* This is a custom hook
+const useAsyncState = <T,>(initialValue: T): [T, (param: T) => Promise<T>] => {
+  const [value, setValue]: [T, Dispatch<T>] = useState(initialValue);
+  const setter = (x: T) =>
+    new Promise<T>(resolve => {
+      setValue(x);
+      resolve(x);
+    });
+  return [value, setter];
+}
 
 export default MonteCarlo;
