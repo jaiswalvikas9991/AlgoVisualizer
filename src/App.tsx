@@ -1,25 +1,33 @@
-import React from "react";
-import "./App.css";
-import { Tabs, Tab } from "react-bootstrap";
-import MonteCarlo from "screens/MonteCarlo/MonteCarlo";
-import Sorting from "screens/Sorting/Sorting";
-import PathFinding from "screens/PathFinding/PathFinding";
+import { useState } from "react";
+import Graph from "screens/Graph";
+import Sorting from "screens/Sorting";
 
-const App: React.FC = () => {
+const App = () => {
+  const [activeTabNum, setActiveTabNum] = useState(0);
+
+  let activeTabUi;
+  if (activeTabNum === 0) activeTabUi = <Sorting />;
+  else if (activeTabNum === 1) activeTabUi = <Graph />;
+
   return (
-    <>
-      <Tabs defaultActiveKey="Sorting" id="main_tab_navigator">
-        <Tab eventKey="Sorting" title="Sorting">
-          <Sorting />
-        </Tab>
-        <Tab eventKey="UnionFind" title="UnionFind">
-          <MonteCarlo />
-        </Tab>
-        <Tab eventKey="PathFinding" title="PathFinding">
-          <PathFinding/>
-        </Tab>
-      </Tabs>
-    </>
+    <div className="h-screen w-screen flex flex-col items-center scrollbar-none">
+      <nav className="w-full sm:w-5/6 h-min mt-2 mb-2 space-x-3 bg-purple-100 backdrop-blur-md shadow-md rounded-md p-2">
+        <span>AlgoVisualizer</span>
+        <button
+          onClick={() => setActiveTabNum(0)}
+          className="p-2 rounded-md bg-purple-200 shadow-md hover:bg-purple-300"
+        >
+          Sorting
+        </button>
+        <button
+          onClick={() => setActiveTabNum(1)}
+          className="p-2 rounded-md bg-purple-200 shadow-md hover:bg-purple-300"
+        >
+          Path Finding
+        </button>
+      </nav>
+      <div className="flex flex-col w-full h-full">{activeTabUi}</div>
+    </div>
   );
 };
 
