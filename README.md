@@ -11,6 +11,11 @@ A ReactJs based Web Application for visualization of Algorithms like Sorting, Pa
 **Link to the live webpage is [here](https://algo-visualizer-eta.vercel.app)**
 
 
+
+> Breadth First Search
+
+![BFS](https://user-images.githubusercontent.com/48611968/200164490-88a2aa4a-b5ac-476c-b572-2a206ab5502e.gif)
+
 > Selection Sort
 
 ![SelectionSort](https://user-images.githubusercontent.com/48611968/200164383-89d2a25a-a053-4359-b799-b70d3e129efc.gif)
@@ -27,8 +32,3 @@ A ReactJs based Web Application for visualization of Algorithms like Sorting, Pa
 > Heap Sort
 
 ![HeapSort](https://user-images.githubusercontent.com/48611968/200164424-564d3b4e-55ce-46f7-a6f1-464391425268.gif)
-
-
-> Breadth First Search
-
-![BFS](https://user-images.githubusercontent.com/48611968/200164490-88a2aa4a-b5ac-476c-b572-2a206ab5502e.gif)
