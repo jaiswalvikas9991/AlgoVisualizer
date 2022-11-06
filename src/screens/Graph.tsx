@@ -49,7 +49,7 @@ export default function App() {
   ];
   const [animationSpeed, setAnimationSpeed] = useState(2);
 
-  const pathFinderAlgos = ["BFS", "Dijkstra"];
+  const pathFinderAlgos = ["BFS"];
   const [selectedAlgo, setSelectedAlgo] = useState(0);
 
   const bfsStateUpdate = async (
