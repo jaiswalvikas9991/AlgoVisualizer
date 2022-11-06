@@ -22,7 +22,7 @@ const Sorting: React.FC = () => {
   const [towerWidth, setTowerWidth] = useState(20);
   const [activeTab, setActiveTab] = useState(0);
   const [showDropDown, setShowDropDown] = useState(false);
-  const defaultArrayLen: number = 100;
+  const defaultArrayLen: number = 50;
   const [nodeNum, setNodeNum] = useState(defaultArrayLen);
   const animationSpeeds = [50, 100, 150, 200, 300];
   const animationSpeedsInEnglish = [
@@ -33,6 +33,7 @@ const Sorting: React.FC = () => {
     "Very Slow",
   ];
   const [animationSpeed, setAnimationSpeed] = useState(2);
+  const [startDisabled, setStartDisabled] = useState(false);
 
   const onScreenResize = () => {
     if (!parentRef) return;
@@ -70,35 +71,45 @@ const Sorting: React.FC = () => {
     Dispatch<{ type: string; payload: number[] }>
   ] = useReducer(heightReducer, randomMatrix(defaultArrayLen));
 
-  const onStart = (): void => {
+  const isSorted = (heights: number[]) => {
+    for (let i = 1; i < heights.length; i++)
+      if (heights[i - 1] > heights[i]) return false;
+    return true;
+  };
+
+  const onStart = async () => {
+    setStartDisabled(true);
     let sort: SortingAlgo = new SortingAlgo(
       setHeights,
       animationSpeeds[animationSpeed]
     );
-    switch (activeTab) {
-      case 0:
-        sort.selectionSort([...heights]);
-        break;
-      case 1:
-        sort.bubbleSort([...heights]);
-        break;
-      case 2:
-        sort.heapSort([...heights]);
-        break;
-      case 3:
-        let arrayM: number[] = [...heights];
-        sort.mergeSort(arrayM);
-        break;
-      case 4:
-        let arrayQ: number[] = [...heights];
-        sort.quickSort(arrayQ, 0, arrayQ.length - 1);
-        break;
-      case 5:
-        sort.insertionSort([...heights]);
-        break;
-      default:
-        sort.selectionSort([...heights]);
+    if (!isSorted(heights)) {
+      switch (activeTab) {
+        case 0:
+          await sort.selectionSort([...heights]);
+          break;
+        case 1:
+          await sort.bubbleSort([...heights]);
+          break;
+        case 2:
+          await sort.heapSort([...heights]);
+          break;
+        case 3:
+          let arrayM: number[] = [...heights];
+          await sort.mergeSort(arrayM);
+          break;
+        case 4:
+          let arrayQ: number[] = [...heights];
+          await sort.quickSort(arrayQ, 0, arrayQ.length - 1);
+          break;
+        case 5:
+          await sort.insertionSort([...heights]);
+          break;
+        default:
+          await sort.selectionSort([...heights]);
+      }
     }
+    setStartDisabled(false);
   };
 
   const onClick = (tab: number): void => {
@@ -116,18 +127,27 @@ const Sorting: React.FC = () => {
     "Insertion Sort",
   ];
 
+  const onArrayReload = () => {
+    setHeights({ type: "UPDATE", payload: randomMatrix(nodeNum) });
+  };
+
   return (
     <>
-      <div className="flex flex-row items-center space-x-2 ml-2 mr-2">
-        <Button color="success" text="Start" onClick={onStart} />
+      <div className="flex flex-row items-center space-x-2 ml-2 mr-2 flex-wrap">
+        <Button
+          color={startDisabled ? "disabled" : "success"}
+          disabled={startDisabled}
+          text="Start"
+          onClick={onStart}
+        />
 
         <div className="dropdown inline-block relative">
-          <button
+          <Button
             onClick={() => setShowDropDown(!showDropDown)}
-            className="bg-purple-300 font-semibold py-2 px-4 rounded inline-flex items-center cursor-pointer"
-          >
-            {sortingAlgos[activeTab]}
-          </button>
+            color={startDisabled ? "disabled" : "primary"}
+            disabled={startDisabled}
+            text={sortingAlgos[activeTab]}
+          />
 
           <ul className={`absolute ${showDropDown ? "block" : "hidden"} pt-1`}>
             <li>
@@ -148,10 +168,19 @@ const Sorting: React.FC = () => {
         </div>
 
         <Button
+          color={startDisabled ? "disabled" : "primary"}
+          disabled={startDisabled}
           onClick={() =>
             setAnimationSpeed((animationSpeed + 1) % animationSpeeds.length)
           }
           text={`Animation Speed: ${animationSpeedsInEnglish[animationSpeed]}`}
+        />
+
+        <Button
+          color={startDisabled ? "disabled" : "primary"}
+          disabled={startDisabled}
+          onClick={onArrayReload}
+          text="Reload Array"
         />
 
         <label
@@ -161,13 +190,18 @@ const Sorting: React.FC = () => {
           No. of Blocks {nodeNum}
         </label>
         <input
+          disabled={startDisabled}
           id="default-range"
           type="range"
           value={nodeNum}
           min={2}
           max={100}
           onChange={onNumberOfNodeChange}
-          className="flex-1 h-2 bg-purple-300 rounded-lg appearance-none cursor-pointer slider"
+          className={`flex-1 h-2 rounded-lg appearance-none cursor-pointer ${
+            startDisabled
+              ? "bg-slate-300 slider-disabled"
+              : "bg-purple-300 slider"
+          }`}
         />
       </div>
 
@@ -198,7 +232,7 @@ const Tower = (props: Props) => {
         }}
       />
     ),
-    [props.height]
+    [props.height, props.width]
   );
 };
 

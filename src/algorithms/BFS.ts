@@ -29,10 +29,10 @@ const bfs = async (
   const introBy = new Map<number, number>();
   while (!q.isEmpty()) {
     const cur = q.dequeue();
-    if (cur === target)
-      return await pathFound(makeEdges(source, target, introBy));
     if (done.has(cur)) continue;
     await tick(done, q, cur);
+    if (cur === target)
+      return await pathFound(makeEdges(source, target, introBy));
     done.add(cur);
     for (const e of graph.get(cur)) {
       if (done.has(e)) continue;
@@ -41,6 +41,7 @@ const bfs = async (
     }
     await tick(done, q, cur);
   }
+  await notFound();
 };
 
 export default bfs;

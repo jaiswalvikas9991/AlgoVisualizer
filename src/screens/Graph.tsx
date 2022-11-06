@@ -51,6 +51,7 @@ export default function App() {
 
   const pathFinderAlgos = ["BFS"];
   const [selectedAlgo, setSelectedAlgo] = useState(0);
+  const [startButtonDisabled, setStartButtonDisabled] = useState(false);
 
   const bfsStateUpdate = async (
     done: Set<number>,
@@ -64,7 +65,8 @@ export default function App() {
       if (node.id === cur) curNodeColor.set(node.id, "blue");
       else if (done.has(node.id)) curNodeColor.set(node.id, "red");
       else if (queueSet.has(node.id)) curNodeColor.set(node.id, "yellow");
-      else curNodeColor.set(node.id, nodeColor.get(node.id));
+      // TODO: There is bug here
+      else curNodeColor.set(node.id, "purple");
     }
 
     const curEdgeColor = new Map<string, string>();
@@ -79,17 +81,30 @@ export default function App() {
           edgeIdFromSourceAndTarget(getId(edge.source), getId(edge.target)),
           "yellow"
         );
+      // TODO: There is bug here
       else
         curEdgeColor.set(
           edgeIdFromSourceAndTarget(getId(edge.source), getId(edge.target)),
-          edgeColor.get(
-            edgeIdFromSourceAndTarget(getId(edge.source), getId(edge.target))
-          )
+          "purple"
         );
     }
     setNodeColor(curNodeColor);
     setEdgeColor(curEdgeColor);
     await sleep(animationSpeeds[animationSpeed]);
+  };
+
+  const resetColor = () => {
+    setNodeColor((nodes) => {
+      const colors = new Map<number, string>();
+      for (const key of nodes) colors.set(key[0], "purple");
+      return colors;
+    });
+
+    setEdgeColor((edges) => {
+      const colors = new Map<string, string>();
+      for (const key of edges) colors.set(key[0], "purple");
+      return colors;
+    });
   };
 
   const renderRandomGraph = () => {
@@ -138,9 +153,12 @@ export default function App() {
   }, [nodeNum]);
 
   const onClick = async () => {
+    resetColor();
+    await sleep(1000);
     const graph = makeGraph(nodes, links);
     const source = startNode,
       target = endNode;
+    setStartButtonDisabled(true);
     await bfs(
       graph,
       startNode,
@@ -177,9 +195,12 @@ export default function App() {
         }
         setNodeColor(curNodeColor);
         setEdgeColor(curEdgeColor);
-        await sleep(animationSpeeds[animationSpeed]);
+        setStartButtonDisabled(false);
       },
-      async () => {}
+      async () => {
+        alert("No Path Found");
+        setStartButtonDisabled(false);
+      }
     );
   };
 
@@ -197,8 +218,16 @@ export default function App() {
   return (
     <>
       <div className="ml-2 mr-2 flex flex-row items-center space-x-2 flex-wrap">
-        <Button color="success" onClick={onClick} text="Start" />
         <Button
+          disabled={startButtonDisabled}
+          color={startButtonDisabled ? "disabled" : "success"}
+          onClick={onClick}
+          text="Start"
+        />
+
+        <Button
+          disabled={startButtonDisabled}
+          color={startButtonDisabled ? "disabled" : "primary"}
           text={pathFinderAlgos[selectedAlgo]}
           onClick={() =>
             setSelectedAlgo((selectedAlgo + 1) % pathFinderAlgos.length)
@@ -206,7 +235,14 @@ export default function App() {
         />
 
         <Button
-          color={changeStartNode ? "danger" : "primary"}
+          disabled={startButtonDisabled}
+          color={
+            startButtonDisabled
+              ? "disabled"
+              : changeStartNode
+              ? "danger"
+              : "primary"
+          }
           text={`Source Node ${startNode}`}
           onClick={() => {
             setChangeEndNode(false);
@@ -215,7 +251,14 @@ export default function App() {
         />
 
         <Button
-          color={changeEndNode ? "danger" : "primary"}
+          disabled={startButtonDisabled}
+          color={
+            startButtonDisabled
+              ? "disabled"
+              : changeEndNode
+              ? "danger"
+              : "primary"
+          }
           text={`Target Node ${endNode}`}
           onClick={() => {
             setChangeStartNode(false);
@@ -224,28 +267,40 @@ export default function App() {
         />
 
         <Button
+          disabled={startButtonDisabled}
+          color={startButtonDisabled ? "disabled" : "primary"}
           onClick={() =>
             setAnimationSpeed((animationSpeed + 1) % animationSpeeds.length)
           }
           text={`Animation Speed: ${animationSpeedsInEnglish[animationSpeed]}`}
         />
 
-        <Button onClick={() => renderRandomGraph()} text="Reload Graph" />
+        <Button
+          disabled={startButtonDisabled}
+          color={startButtonDisabled ? "disabled" : "primary"}
+          onClick={() => renderRandomGraph()}
+          text="Reload Graph"
+        />
 
         <label
           htmlFor="default-range"
-          className="block mb-2 text-sm font-medium text-purple-500"
+          className="block text-sm font-medium text-purple-500"
         >
           No. of Nodes {nodeNum}
         </label>
         <input
+          disabled={startButtonDisabled}
           id="default-range"
           type="range"
           value={nodeNum}
           min={2}
           max={50}
           onChange={onNumberOfNodeChange}
-          className="flex-1 h-2 bg-purple-300 rounded-lg appearance-none cursor-pointer slider"
+          className={`flex-1 h-2 rounded-lg appearance-none cursor-pointer ${
+            startButtonDisabled
+              ? "bg-slate-300 slider-disabled"
+              : "bg-purple-300 slider"
+          }`}
         />
       </div>
       <div className="p-2 mt-1 mb-1" />

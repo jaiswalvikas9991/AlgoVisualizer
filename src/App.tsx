@@ -10,7 +10,7 @@ const App = () => {
   else if (activeTabNum === 1) activeTabUi = <Graph />;
 
   return (
-    <div className="h-screen w-screen flex flex-col items-center scrollbar-none">
+    <div className="h-screen w-screen flex flex-col items-center scrollbar-none overflow-hidden">
       <nav className="w-full sm:w-5/6 h-min mt-2 mb-2 space-x-3 bg-purple-100 backdrop-blur-md shadow-md rounded-md p-2">
         <span>AlgoVisualizer</span>
         <button

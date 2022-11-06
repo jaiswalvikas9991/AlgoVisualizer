@@ -44,8 +44,7 @@ export default class SortingAlgo {
           list[j + 1] = temp;
           shouldBreak = false;
           this.setHeight({ type: "UPDATE", payload: list });
-          await this.sleep(this.delay * 0.0001);
-          //await this.sleep(this.delay);
+          await this.sleep(this.delay);
         }
       }
       if (shouldBreak) break;
@@ -73,7 +72,7 @@ export default class SortingAlgo {
         arr[i] = arr[j];
         arr[j] = temp;
       }
-      await this.sleep(this.delay * 0.1);
+      await this.sleep(this.delay);
       this.setHeight({ type: "UPDATE", payload: arr });
     }
     let temp: number = arr[i + 1];
@@ -105,12 +104,12 @@ export default class SortingAlgo {
         temp[k++] = A[j++];
       }
       this.setHeight({ type: "UPDATE", payload: temp });
-      await this.sleep(this.delay * 0.1);
+      await this.sleep(this.delay);
     }
     while (i < A.length && i <= mid) {
       temp[k++] = A[i++];
       this.setHeight({ type: "UPDATE", payload: temp });
-      await this.sleep(this.delay * 0.1);
+      await this.sleep(this.delay);
     }
     for (i = from; i <= to; i++) {
       A[i] = temp[i];
@@ -143,7 +142,7 @@ export default class SortingAlgo {
         arr[idx - 1] = temp;
         idx--;
         this.setHeight({ type: "UPDATE", payload: arr });
-        await this.sleep(this.delay * 0.000001);
+        await this.sleep(this.delay);
       }
     }
   };
