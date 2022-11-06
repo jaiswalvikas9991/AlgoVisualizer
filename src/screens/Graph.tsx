@@ -7,8 +7,10 @@ import {
   edgeIdFromSourceAndTarget,
   getId,
 } from "algorithms/utils";
+import Button from "components/Button";
 import { useEffect, useState, useRef } from "react";
 import GraphSim from "./GraphSim";
+import "../slider.css";
 
 const makeGraph = (nodes: Node[], edges: Link[]): Map<number, Set<number>> => {
   const graph = new Map<number, Set<number>>();
@@ -194,74 +196,56 @@ export default function App() {
 
   return (
     <>
-      <div className="ml-2 flex flex-row items-center space-x-2 flex-wrap">
-        <button
-          className="p-2 mt-1 mb-1 rounded-md bg-green-200 shadow-md hover:bg-green-300"
-          onClick={onClick}
-        >
-          Start
-        </button>
-
-        <button
-          className="p-2 mt-1 mb-1 rounded-md bg-purple-200 shadow-md hover:bg-purple-300"
+      <div className="ml-2 mr-2 flex flex-row items-center space-x-2 flex-wrap">
+        <Button color="success" onClick={onClick} text="Start" />
+        <Button
+          text={pathFinderAlgos[selectedAlgo]}
           onClick={() =>
             setSelectedAlgo((selectedAlgo + 1) % pathFinderAlgos.length)
           }
-        >
-          {pathFinderAlgos[selectedAlgo]}
-        </button>
+        />
 
-        <button
-          className={`p-2 mt-1 mb-1 rounded-md shadow-md hover:bg-purple-300 ${
-            changeStartNode
-              ? "bg-red-200 hover:bg-red-300"
-              : "bg-purple-200 hover:bg-purple-300"
-          }`}
+        <Button
+          color={changeStartNode ? "danger" : "primary"}
+          text={`Source Node ${startNode}`}
           onClick={() => {
             setChangeEndNode(false);
             setChangeStartNode(!changeStartNode);
           }}
-        >
-          Source Node {startNode}
-        </button>
+        />
 
-        <button
-          className={`p-2 mt-1 mb-1 rounded-md shadow-md ${
-            changeEndNode
-              ? "bg-red-200 hover:bg-red-300"
-              : "hover:bg-purple-300 bg-purple-200"
-          }`}
+        <Button
+          color={changeEndNode ? "danger" : "primary"}
+          text={`Target Node ${endNode}`}
           onClick={() => {
             setChangeStartNode(false);
             setChangeEndNode(!changeEndNode);
           }}
-        >
-          Target Node {endNode}
-        </button>
+        />
 
-        <button
-          className="p-2 mt-1 mb-1 rounded-md bg-purple-200 shadow-md hover:bg-purple-300"
+        <Button
           onClick={() =>
             setAnimationSpeed((animationSpeed + 1) % animationSpeeds.length)
           }
-        >
-          Animation Speed: {animationSpeedsInEnglish[animationSpeed]}
-        </button>
+          text={`Animation Speed: ${animationSpeedsInEnglish[animationSpeed]}`}
+        />
 
-        <button
-          className="p-2 mt-1 mb-1 rounded-md bg-purple-200 shadow-md hover:bg-purple-300"
-          onClick={() => renderRandomGraph()}
-        >
-          Reload Graph
-        </button>
+        <Button onClick={() => renderRandomGraph()} text="Reload Graph" />
 
+        <label
+          htmlFor="default-range"
+          className="block mb-2 text-sm font-medium text-purple-500"
+        >
+          No. of Nodes {nodeNum}
+        </label>
         <input
-          className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          id="username"
-          type="number"
-          placeholder="Number of Nodes"
+          id="default-range"
+          type="range"
           value={nodeNum}
+          min={2}
+          max={50}
           onChange={onNumberOfNodeChange}
+          className="flex-1 h-2 bg-purple-300 rounded-lg appearance-none cursor-pointer slider"
         />
       </div>
       <div className="p-2 mt-1 mb-1" />
